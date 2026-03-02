@@ -12,9 +12,7 @@
   <div style="display:flex; gap:20px; flex-wrap:wrap;">
     @for (ordine of listaOrdini; track ordine.id) {
       <div style="border:1px solid #ccc; padding:15px; border-radius:8px; width:280px; background-color:#f9f9f9;">
-        <h3 style="margin:0 0 8px 0;">Ordine: {{ ordine.numero }}</h3>
-
-        <p style="margin:4px 0;">NumeroOrdine: {{ ordine.numeroOrdine }}</p>
+        <h3 style="margin:0 0 8px 0;">Ordine: {{ ordine.numeroOrdine }}</h3>
         <p style="margin:4px 0;">NumeroCliente: {{ ordine.numeroCliente }}</p>
         <p style="margin:4px 0;">Stato: {{ ordine.stato}}</p>
         <p style="margin:4px 0;">Totale: {{ ordine.totaleOrdine }}€</p>

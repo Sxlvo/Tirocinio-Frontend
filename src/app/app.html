@@ -1,44 +1,127 @@
-<div style="min-height: 100vh; background-color: #f4f6f9; font-family: Arial, sans-serif;">
-
-  <!-- HEADER -->
-  <div style="background-color: #1f2937; padding: 0 40px; color: white; display: flex; justify-content: space-between; align-items: center; height: 70px;">
-
-    <!-- SINISTRA: Home -->
-    <a routerLink="/" 
-       style="display:flex; align-items:center; gap:10px; color:white; text-decoration:none; font-size:18px; font-weight:bold; cursor:pointer;">
-       
-      <!-- Icona Home SVG -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" viewBox="0 -1 28 30">
-        <path d="M3 11.5L12 4l9 7.5v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-8z"/>
+<div style="min-height: 100vh; background-color: #f4f6f9; font-family: Arial, sans-serif">
+  <div
+    style="
+      background-color: #1f2937;
+      padding: 0 40px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    "
+  >
+    <a
+      routerLink="/"
+      style="
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: white;
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="30"
+        height="30"
+        fill="white"
+        viewBox="0 -1 28 30"
+      >
+        <path d="M3 11.5L12 4l9 7.5v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-8z" />
       </svg>
 
       BS Solution - Tirocinio
     </a>
 
-    <!-- DESTRA: MENU -->
-    <div style="display:flex; height:100%;">
-
-      <a routerLink="/prodotti"
-         style="display:flex; align-items:center; padding:0 20px; color:white; text-decoration:none; font-weight:500; cursor:pointer;">
+    <div style="display: flex; align-items: center; height: 100%">
+      <a
+        routerLink="/prodotti"
+        style="
+          display: flex;
+          align-items: center;
+          padding: 0 20px;
+          color: white;
+          text-decoration: none;
+          font-weight: 500;
+        "
+      >
         Prodotti
       </a>
 
-      <a routerLink="/clienti"
-         style="display:flex; align-items:center; padding:0 20px; color:white; text-decoration:none; font-weight:500; cursor:pointer;">
+      <a
+        routerLink="/clienti"
+        style="
+          display: flex;
+          align-items: center;
+          padding: 0 20px;
+          color: white;
+          text-decoration: none;
+          font-weight: 500;
+        "
+      >
         Clienti
       </a>
 
-      <a routerLink="/ordini"
-         style="display:flex; align-items:center; padding:0 20px; color:white; text-decoration:none; font-weight:500; cursor:pointer;">
+      <a
+        routerLink="/ordini"
+        style="
+          display: flex;
+          align-items: center;
+          padding: 0 20px;
+          color: white;
+          text-decoration: none;
+          font-weight: 500;
+        "
+      >
         Ordini
       </a>
 
+      <a
+        *ngIf="!auth.isLoggedIn()"
+        routerLink="/login"
+        style="
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-left: 20px;
+          padding: 8px 14px;
+          background: #3b82f6;
+          border-radius: 6px;
+          color: white;
+          text-decoration: none;
+          font-weight: 600;
+        "
+      >
+        Login
+      </a>
+
+      <button
+        *ngIf="auth.isLoggedIn()"
+        type="button"
+        (click)="logout()"
+        style="
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-left: 20px;
+          padding: 8px 14px;
+          background: #ef4444;
+          border: none;
+          border-radius: 6px;
+          color: white;
+          font-weight: 600;
+          cursor: pointer;
+        "
+      >
+        Logout
+      </button>
     </div>
   </div>
 
-  <!-- CONTENUTO -->
-  <div style="padding: 40px;">
+  <div style="padding: 40px">
     <router-outlet></router-outlet>
   </div>
-
 </div>

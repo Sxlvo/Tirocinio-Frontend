@@ -1,14 +1,18 @@
 import { Routes } from '@angular/router';
-
 import { Home } from './pages/home/home';
 import { ProdottiComponent } from './pages/prodotti/prodotti';
 import { ClientiComponent } from './pages/clienti/clienti';
 import { OrdiniComponent } from './pages/ordini/ordini';
+import { LoginComponent } from './pages/login/login';
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
-  { path: '', component: Home },
-  { path: 'prodotti', component: ProdottiComponent },
-  { path: 'clienti', component: ClientiComponent },
-  { path: 'ordini', component: OrdiniComponent },
-  { path: '**', redirectTo: '', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+
+  { path: '', component: Home, canActivate: [authGuard] },
+  { path: 'prodotti', component: ProdottiComponent, canActivate: [authGuard] },
+  { path: 'clienti', component: ClientiComponent, canActivate: [authGuard] },
+  { path: 'ordini', component: OrdiniComponent, canActivate: [authGuard] },
+
+  { path: '**', redirectTo: '' }
 ];

@@ -1,22 +1,22 @@
 <h2>Clienti</h2>
 
-<button (click)="caricaClienti()" style="margin-bottom:12px; padding:8px 12px; cursor:pointer;">
-  Ricarica
-</button>
+<button class="reload-btn" (click)="caricaClienti()">Ricarica</button>
 
 @if (loading) {
-  <p>Sto caricando i clienti dal server... ⏳</p>
+  <p class="loading">Sto caricando i clienti dal server... ⏳</p>
 } @else if (errore) {
-  <p style="color:red">{{ errore }}</p>
+  <p class="errore">{{ errore }}</p>
 } @else {
-  <div style="display:flex; gap:20px; flex-wrap:wrap;">
+  <div class="clienti-container">
     @for (cliente of listaClienti; track cliente.id) {
-      <div style="border:1px solid #ccc; padding:15px; border-radius:8px; width:260px; background-color:#f9f9f9;">
-        <h3 style="margin:0 0 8px 0;">{{ cliente.nome }}</h3>
+      <div class="cliente-card">
+        <h3 class="nome">{{ cliente.nome }}</h3>
 
-        <p style="margin:4px 0;">Codice: {{ cliente.codiceCliente }}</p>
-        <p style="margin:4px 0;">Email: {{ cliente.email }}</p>
-        <p style="margin:4px 0;">Indirizzo: {{ cliente.indirizzo }}</p>
+        <p class="info">Codice: {{ cliente.codiceCliente }}</p>
+
+        <p class="info">Email: {{ cliente.email }}</p>
+
+        <p class="info">Indirizzo: {{ cliente.indirizzo }}</p>
       </div>
     }
   </div>

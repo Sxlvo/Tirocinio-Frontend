@@ -1,0 +1,51 @@
+.reload-btn {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+}
+
+.loading {
+  color: #555;
+}
+
+.errore {
+  color: red;
+}
+
+.prodotti-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.prodotto-card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  width: 200px;
+  background-color: #f9f9f9;
+  transition: 0.15s;
+}
+
+.prodotto-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.nome {
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.codice {
+  color: #666;
+}
+
+.prezzo {
+  font-weight: bold;
+  font-size: 18px;
+  color: green;
+}

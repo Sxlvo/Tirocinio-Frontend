@@ -1,21 +1,21 @@
 <h2>Prodotti</h2>
-<button (click)="caricaProdotti()" style="margin-bottom:12px; padding:8px 12px; cursor:pointer;">
-  Ricarica
-</button>
+
+<button class="reload-btn" (click)="caricaProdotti()">Ricarica</button>
 
 @if (loading) {
-  <p>Sto caricando i prodotti dal server... ⏳</p>
+  <p class="loading">Sto caricando i prodotti dal server... ⏳</p>
 } @else if (errore) {
-  <p style="color:red">{{ errore }}</p>
+  <p class="errore">{{ errore }}</p>
 } @else {
-  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+  <div class="prodotti-container">
     @for (prodotto of listaProdotti; track prodotto.id) {
-      <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; width: 200px; background-color: #f9f9f9;">
-        <h3 style="color: #333;">{{ prodotto.descrizione }}</h3>
-        <p style="color: #666;">Codice: {{ prodotto.codiceArticolo }}</p>
-        <p style="font-weight: bold; font-size: 18px; color: green;">{{ prodotto.prezzoUnitario }} €</p>
+      <div class="prodotto-card">
+        <h3 class="nome">{{ prodotto.descrizione }}</h3>
+
+        <p class="codice">Codice: {{ prodotto.codiceArticolo }}</p>
+
+        <p class="prezzo">{{ prodotto.prezzoUnitario }} €</p>
       </div>
     }
-
   </div>
 }

@@ -1,21 +1,20 @@
 <h2>Ordini</h2>
 
-<button (click)="caricaOrdini()" style="margin-bottom:12px; padding:8px 12px; cursor:pointer;">
-  Ricarica
-</button>
+<button class="reload-btn" (click)="caricaOrdini()">Ricarica</button>
 
 @if (loading) {
-  <p>Sto caricando gli ordini dal server... ⏳</p>
+  <p class="loading">Sto caricando gli ordini dal server... ⏳</p>
 } @else if (errore) {
-  <p style="color:red">{{ errore }}</p>
+  <p class="errore">{{ errore }}</p>
 } @else {
-  <div style="display:flex; gap:20px; flex-wrap:wrap;">
+  <div class="ordini-container">
     @for (ordine of listaOrdini; track ordine.id) {
-      <div style="border:1px solid #ccc; padding:15px; border-radius:8px; width:280px; background-color:#f9f9f9;">
-        <h3 style="margin:0 0 8px 0;">Ordine: {{ ordine.numeroOrdine }}</h3>
-        <p style="margin:4px 0;">NumeroCliente: {{ ordine.numeroCliente }}</p>
-        <p style="margin:4px 0;">Stato: {{ ordine.stato}}</p>
-        <p style="margin:4px 0;">Totale: {{ ordine.totaleOrdine }}€</p>
+      <div class="ordine-card">
+        <h3>Ordine: {{ ordine.numeroOrdine }}</h3>
+
+        <p>Numero Cliente: {{ ordine.numeroCliente }}</p>
+        <p>Stato: {{ ordine.stato }}</p>
+        <p>Totale: {{ ordine.totaleOrdine }} €</p>
       </div>
     }
   </div>

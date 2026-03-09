@@ -1,0 +1,44 @@
+.reload-btn {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+}
+
+.loading {
+  color: #555;
+}
+
+.errore {
+  color: red;
+}
+
+.ordini-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.ordine-card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  width: 180px;
+  background-color: #f9f9f9;
+  transition: 0.15s;
+}
+
+.ordine-card h3 {
+  margin: 0 0 8px 0;
+}
+
+.ordine-card p {
+  margin: 4px 0;
+}
+
+.ordine-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}

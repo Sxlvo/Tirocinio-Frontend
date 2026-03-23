@@ -1,5 +1,11 @@
 <h2>Ordini</h2>
 
+<div class="filtro-info">
+  <p><strong>Utente:</strong> {{ userName }}</p>
+  <p><strong>Codice agente:</strong> {{ agentCode }}</p>
+  <p><strong>Filtro attivo:</strong> ordini associati all'agente loggato</p>
+</div>
+
 <button class="reload-btn" (click)="caricaOrdini()">Ricarica</button>
 
 @if (loading) {

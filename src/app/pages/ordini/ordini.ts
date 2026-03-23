@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs';
 import { ApiService } from '../../api';
 
 @Component({
@@ -7,36 +8,64 @@ import { ApiService } from '../../api';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './ordini.html',
-  styleUrls: ['./ordini.scss']
+  styleUrl: './ordini.scss',
 })
 export class OrdiniComponent implements OnInit {
   listaOrdini: any[] = [];
-  loading = true;
+  loading = false;
   errore = '';
+  userName = '';
+  agentCode = '';
 
-  constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private api: ApiService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.userName = localStorage.getItem('userName') ?? '';
+    this.agentCode = localStorage.getItem('agentCode') ?? '';
     this.caricaOrdini();
   }
 
-  caricaOrdini() {
+  caricaOrdini(): void {
     this.loading = true;
     this.errore = '';
     this.listaOrdini = [];
+    this.cdr.detectChanges();
 
-    this.api.getOrdini().subscribe({
-      next: (res: any) => {
-        this.listaOrdini = res.value ?? [];
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: (e) => {
-        this.loading = false;
-        this.errore = 'Errore nel caricamento ordini';
-        console.error(e);
-        this.cdr.detectChanges();
-      }
-    });
+    const agentCode = localStorage.getItem('agentCode')?.trim();
+
+    if (!agentCode) {
+      this.errore = 'Codice agente non trovato';
+      this.loading = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.api
+      .getOrdiniByAgente(agentCode)
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        }),
+      )
+      .subscribe({
+        next: (res: any) => {
+          this.listaOrdini = res?.value ?? [];
+
+          if (this.listaOrdini.length === 0) {
+            this.errore = 'Nessun ordine associato a questo agente';
+          }
+
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Errore caricamento ordini:', err);
+          this.errore = 'Errore nel caricamento ordini';
+          this.cdr.detectChanges();
+        },
+      });
   }
 }

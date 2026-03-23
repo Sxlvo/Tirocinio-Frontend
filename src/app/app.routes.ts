@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+
 import { Home } from './pages/home/home';
 import { ProdottiComponent } from './pages/prodotti/prodotti';
 import { ClientiComponent } from './pages/clienti/clienti';
@@ -14,5 +15,5 @@ export const routes: Routes = [
   { path: 'clienti', component: ClientiComponent, canActivate: [authGuard] },
   { path: 'ordini', component: OrdiniComponent, canActivate: [authGuard] },
 
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

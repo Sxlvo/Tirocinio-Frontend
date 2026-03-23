@@ -25,14 +25,14 @@
   border: 1px solid #ccc;
   padding: 15px;
   border-radius: 8px;
-  width: 200px;
+  width: 180px;
   background-color: #f9f9f9;
   transition: 0.15s;
 }
 
 .prodotto-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .nome {
@@ -48,4 +48,16 @@
   font-weight: bold;
   font-size: 18px;
   color: green;
+}
+
+.filtro-info {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  background: #f5f5f5;
+  border-left: 4px solid #3f51b5;
+  border-radius: 6px;
+}
+
+.filtro-info p {
+  margin: 4px 0;
 }

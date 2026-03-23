@@ -1,33 +1,49 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
-  
-  private baseUrl = 'https://api.businesscentral.dynamics.com/v2.0/6b99dd4b-9681-4414-8a12-1beeb67853f9/Sandbox_BC27/api/bs/tirocinio/v1.0/companies(14fae42a-0299-f011-a7b1-6045bdc8dcac)/';
-  
-  private token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlFaZ045SHFOa0dORU00R2VLY3pEMDJQY1Z2NCIsImtpZCI6IlFaZ045SHFOa0dORU00R2VLY3pEMDJQY1Z2NCJ9.eyJhdWQiOiJodHRwczovL2FwaS5idXNpbmVzc2NlbnRyYWwuZHluYW1pY3MuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvNmI5OWRkNGItOTY4MS00NDE0LThhMTItMWJlZWI2Nzg1M2Y5LyIsImlhdCI6MTc3MzA3MjMzOCwibmJmIjoxNzczMDcyMzM4LCJleHAiOjE3NzMwNzcyOTAsImFjciI6IjEiLCJhaW8iOiJBWFFBaS84YkFBQUFCZWdiakhDZklXOWpBalIyY2c0K0N6S0xaeGlmU1RXb2xpNkc4ZXhQRHlSU0NnSHNubHJ2NFl1N0NoOC9ncXl4WExXWkpiQkFrUC84Z3k0RDhnOXpwYzJVRkhPdHlEZE5mV0ZuVC91cFp4bUk0QnFRVFRrUGdFQS9OTjF3Y1RiaDFHUjhSS2lwQUdtVE5mT3cxOFRwT0E9PSIsImFtciI6WyJwd2QiXSwiYXBwaWQiOiJlMjY1ODFiNy1iOGZkLTQ1Y2YtODYxMC1iODc1NzBkMWM0ZDkiLCJhcHBpZGFjciI6IjEiLCJmYW1pbHlfbmFtZSI6IjAxIiwiZ2l2ZW5fbmFtZSI6IlN0YWdlIiwiaWR0eXAiOiJ1c2VyIiwiaXBhZGRyIjoiMTUxLjkuMTQwLjI0NSIsIm5hbWUiOiJTdGFnZTAxIiwib2lkIjoiMTIzMGMzMzYtZTJkNC00ZGYxLWI2MWUtY2Y3MTI5OWUwZTlkIiwicHVpZCI6IjEwMDMyMDAyMTBBQjVGODYiLCJyaCI6IjEuQVhNQVM5MlphNEdXRkVTS0VodnV0bmhULVQzdmJabHNzMU5CaGdlbV9Ud0J1SjhBQU9OekFBLiIsInNjcCI6IkZpbmFuY2lhbHMuUmVhZFdyaXRlLkFsbCB1c2VyX2ltcGVyc29uYXRpb24iLCJzaWQiOiIwMDJlMWNjYS0wNGNjLTlhN2UtN2IwNy1jZGZkMTMxZWJjZDQiLCJzdWIiOiJQNGpmMlpPRGk1SzVfcngtUkhzSk8wSjhvbjdtQlhfRkZ3TjBHenRCbVRZIiwidGlkIjoiNmI5OWRkNGItOTY4MS00NDE0LThhMTItMWJlZWI2Nzg1M2Y5IiwidW5pcXVlX25hbWUiOiJTdGFnZTAxQGJzc3JsLml0IiwidXBuIjoiU3RhZ2UwMUBic3NybC5pdCIsInV0aSI6IkxxRmxjaDFaT0UtcXFtXzNIaUFMQUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfYWN0X2ZjdCI6IjMgOSIsInhtc19mdGQiOiI2TVFtZ1hNUk8zbVBIdlk3SVEyaVVIdTlzZEhHZnhYd3l3akxSSi12VXFNQlpYVnliM0JsZDJWemRDMWtjMjF6IiwieG1zX2lkcmVsIjoiMiAxIiwieG1zX3N1Yl9mY3QiOiIzIDE4In0.hViAHqeguFmx5fa7s0mGNSWOmg1jhGIGDOipC0yBSDYXANuwMlkP_pTvJf45LC2y0j5OXfMB7G7eEFlA32243qUBw3_zJhQnQTI6c-QxebrXekHTB1EGx1O6vZCY8xsqdx6waq5Ujl7Bj3uT8owQf5BZda1F68X_ZCecCsDUVl0HU_AUYRC15uulqmRvMi7EaSieVYCFNNdQBvZkpSG6F7FQWg3NVHD6-cfzZIwmzcEHrZNm7B3wF0Y3TUS4G_7wxkRXLVtYZVsusUlSjKWExtuVJaOtbG1ZGiCA_U9-ZvKAZe2TdwolEdEGyxNGqOy5OwCIRkoN57sfbOrQmC4LhA';
-  constructor(private http: HttpClient) { }
+  private baseUrl =
+    'https://api.businesscentral.dynamics.com/v2.0/6b99dd4b-9681-4414-8a12-1beeb67853f9/Sandbox_BC27/api/bs/tirocinio/v1.0/companies(14fae42a-0299-f011-a7b1-6045bdc8dcac)/';
+
+  private token =
+    'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlFaZ045SHFOa0dORU00R2VLY3pEMDJQY1Z2NCIsImtpZCI6IlFaZ045SHFOa0dORU00R2VLY3pEMDJQY1Z2NCJ9.eyJhdWQiOiJodHRwczovL2FwaS5idXNpbmVzc2NlbnRyYWwuZHluYW1pY3MuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvNmI5OWRkNGItOTY4MS00NDE0LThhMTItMWJlZWI2Nzg1M2Y5LyIsImlhdCI6MTc3NDI4MTk2MywibmJmIjoxNzc0MjgxOTYzLCJleHAiOjE3NzQyODc0MjYsImFjciI6IjEiLCJhaW8iOiJBWFFBaS84YkFBQUErTVo2L1kzV3hGeXBNTUhvc2RxNWtzNHdXMTYyY0ZTUEVaSnNaS3BSZEQrSlZUR3NmK1R1bjRkWUUrN0dPeGhaSy8rcjVGYzNZOHc0U0R2dDNNYVlwTWU0ZDlGemF4Z3ZmRFdodFNNZFZDc0NmVExJd3huRjRJWkJ6QjRYSzFXbnpFWEsrcHhYR29TelFNOGppNXYxcmc9PSIsImFtciI6WyJwd2QiXSwiYXBwaWQiOiJlMjY1ODFiNy1iOGZkLTQ1Y2YtODYxMC1iODc1NzBkMWM0ZDkiLCJhcHBpZGFjciI6IjEiLCJmYW1pbHlfbmFtZSI6IjAxIiwiZ2l2ZW5fbmFtZSI6IlN0YWdlIiwiaWR0eXAiOiJ1c2VyIiwiaXBhZGRyIjoiMmEwMTplMTE6MzAxMDo0ODMwOjNjNGQ6MTc0MDoyZGU0OmUzMDYiLCJuYW1lIjoiU3RhZ2UwMSIsIm9pZCI6IjEyMzBjMzM2LWUyZDQtNGRmMS1iNjFlLWNmNzEyOTllMGU5ZCIsInB1aWQiOiIxMDAzMjAwMjEwQUI1Rjg2IiwicmgiOiIxLkFYTUFTOTJaYTRHV0ZFU0tFaHZ1dG5oVC1UM3ZiWmxzczFOQmhnZW1fVHdCdUo4QUFPTnpBQS4iLCJzY3AiOiJGaW5hbmNpYWxzLlJlYWRXcml0ZS5BbGwgdXNlcl9pbXBlcnNvbmF0aW9uIiwic2lkIjoiMDAyZTFjY2EtMDRjYy05YTdlLTdiMDctY2RmZDEzMWViY2Q0Iiwic3ViIjoiUDRqZjJaT0RpNUs1X3J4LVJIc0pPMEo4b243bUJYX0ZGd04wR3p0Qm1UWSIsInRpZCI6IjZiOTlkZDRiLTk2ODEtNDQxNC04YTEyLTFiZWViNjc4NTNmOSIsInVuaXF1ZV9uYW1lIjoiU3RhZ2UwMUBic3NybC5pdCIsInVwbiI6IlN0YWdlMDFAYnNzcmwuaXQiLCJ1dGkiOiJnNXV2MEYzYXFFeWtqMEdXUVBjQ0FBIiwidmVyIjoiMS4wIiwid2lkcyI6WyJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXSwieG1zX2FjdF9mY3QiOiI5IDMiLCJ4bXNfZnRkIjoid0Z1TDgzQWU0S3BNZFkwQnlPdTkxb2VqMEhvWW5XdnJaLWJseTJxWUNxd0JabkpoYm1ObFl5MWtjMjF6IiwieG1zX2lkcmVsIjoiMSAzMCIsInhtc19zdWJfZmN0IjoiMyA4In0.XFiRfx3ksuO57ETCpuwuJefspzipOP2cS7ETD4vmWSVw0LytnX-hW55KFXWpJK9ZZmYIOrm9TmQXR5YvJ3Pm8NXB1ZwnSCcw4RypwV1pWmPPaAe83HVIJOYocMz7b3S3GzIx8LxLuBLap6LxISVqQU2COUMMP9lFk_wD3rtpECp9GvyeMmc2t_g-CN-GjDC1bMEZNnkxkcPjRPvZKiFP4UCYZloWSD5Gwv-cqo5iUiXh6IhuWZqSackpsdF842A_oQuhNFQjjXORO7_2xwzps7Fuw4ChzJy8W5Bdarq_y6eSTyG4LU4ORiFWAbFvXaeqskpvgFmgBhNh9PmRp8LPMQ';
+  constructor(private http: HttpClient) {}
+
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      Authorization: `Bearer ${this.token}`,
+    });
+  }
 
   getProdotti() {
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.token}`
+      Authorization: `Bearer ${this.token}`,
     });
     return this.http.get(`${this.baseUrl}prodotti`, { headers });
   }
   getClienti() {
-  const headers = new HttpHeaders({
-    'Authorization': `Bearer ${this.token}`
-  });
-  return this.http.get(`${this.baseUrl}clienti`, { headers });
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.token}`,
+    });
+    return this.http.get(`${this.baseUrl}clienti`, { headers });
   }
   getOrdini() {
-  const headers = new HttpHeaders({
-    'Authorization': `Bearer ${this.token}`
-  });
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.token}`,
+    });
 
-  return this.http.get(`${this.baseUrl}ordini`, { headers });
+    return this.http.get(`${this.baseUrl}ordini`, { headers });
+  }
+  getOrdiniByAgente(agentCode: string): Observable<any> {
+  const safeCode = agentCode.trim().replace(/'/g, "''");
+  const url = `${this.baseUrl}ordini?$filter=salespersonCode eq '${safeCode}'`;
+
+  return this.http.get<any>(url, {
+    headers: this.getHeaders(),
+  });
 }
 }

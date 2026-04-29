@@ -1,0 +1,116 @@
+<h2>Nuovo ordine vendita</h2>
+
+@if (loading) {
+  <p class="loading">Sto caricando dati cliente, indirizzi e prodotti... ⏳</p>
+} @else if (errore && !formPronto && !mostraSceltaIndirizzo) {
+  <p class="errore">{{ errore }}</p>
+  <button (click)="tornaAiClienti()">Torna ai clienti</button>
+} @else {
+  <div class="page-wrapper">
+    <div class="box">
+      <h3>Cliente selezionato</h3>
+      <p><strong>Codice:</strong> {{ cliente?.codiceCliente }}</p>
+      <p><strong>Nome:</strong> {{ cliente?.nome }}</p>
+      <p><strong>Indirizzo principale:</strong> {{ cliente?.indirizzo || '-' }}</p>
+    </div>
+
+    @if (mostraSceltaIndirizzo) {
+      <div class="box">
+        <h3>Seleziona indirizzo di spedizione</h3>
+
+        <select [(ngModel)]="indirizzoSelezionatoId">
+          <option value="">-- seleziona --</option>
+
+          @for (indirizzo of indirizziSpedizione; track indirizzo.id) {
+            <option [value]="indirizzo.id">
+              {{ indirizzo.code }} - {{ indirizzo.name }} - {{ indirizzo.address }} {{ indirizzo.city }}
+            </option>
+          }
+        </select>
+
+        <div class="actions">
+          <button (click)="confermaIndirizzo()">Conferma indirizzo</button>
+          <button type="button" (click)="tornaAiClienti()">Annulla</button>
+        </div>
+      </div>
+    }
+
+    @if (formPronto) {
+      <div class="box">
+        <h3>Dati ordine</h3>
+
+        <p>
+          <strong>Spedizione selezionata:</strong>
+          @if (indirizzoSelezionato) {
+            {{ indirizzoSelezionato.name }} - {{ indirizzoSelezionato.address }} {{ indirizzoSelezionato.city }}
+          } @else {
+            indirizzo principale cliente
+          }
+        </p>
+
+        <div class="righe-wrapper">
+          @for (riga of righeOrdine; track $index) {
+            <div class="riga-box">
+              <div class="riga-header">
+                <h4>Riga {{ $index + 1 }}</h4>
+
+                @if (righeOrdine.length > 1) {
+                  <button type="button" class="remove-btn" (click)="rimuoviRiga($index)">
+                    Rimuovi
+                  </button>
+                }
+              </div>
+
+              <label [for]="'prodotto-' + $index">Prodotto</label>
+              <select [id]="'prodotto-' + $index" [(ngModel)]="riga.productId">
+                <option value="">-- seleziona prodotto --</option>
+
+                @for (prodotto of prodotti; track prodotto.id) {
+                  <option [value]="prodotto.id">
+                    {{ prodotto.codiceArticolo }} - {{ prodotto.descrizione }}
+                  </option>
+                }
+              </select>
+
+              <label [for]="'quantita-' + $index">Quantità</label>
+              <input
+                [id]="'quantita-' + $index"
+                type="number"
+                min="1"
+                [(ngModel)]="riga.quantity"
+              />
+            </div>
+          }
+        </div>
+
+        <div class="actions">
+          <button type="button" (click)="aggiungiRiga()">+ Aggiungi prodotto</button>
+        </div>
+
+        @if (errore) {
+          <p class="errore">{{ errore }}</p>
+        }
+
+        @if (successo) {
+          <p class="successo">{{ successo }}</p>
+        }
+
+        <div class="actions">
+          <button [disabled]="saving" (click)="creaOrdine()">
+            {{ saving ? 'Salvataggio...' : 'Crea ordine' }}
+          </button>
+
+          <button type="button" [disabled]="saving" (click)="tornaAiClienti()">
+            Torna ai clienti
+          </button>
+
+          @if (numeroOrdineCreato) {
+            <button type="button" [disabled]="saving" (click)="vaiAOrdini()">
+              Vai agli ordini
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

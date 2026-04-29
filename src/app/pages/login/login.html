@@ -1,37 +1,14 @@
 <div class="login-container">
   <div class="login-box">
-    <h2>Login Agente</h2>
+    <h2>Login Microsoft</h2>
+    <p class="subtitle">Accedi con il tuo account Microsoft per entrare nel gestionale.</p>
 
-    <form (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          [(ngModel)]="email"
-          name="email"
-          placeholder="nome@azienda.it"
-        />
-      </div>
+    <button type="button" (click)="loginMicrosoft()" [disabled]="loading">
+      {{ loading ? 'Accesso in corso...' : 'Accedi con Microsoft' }}
+    </button>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          [(ngModel)]="password"
-          name="password"
-          placeholder="Password"
-        />
-      </div>
-
-      <button type="submit" [disabled]="loading">
-        {{ loading ? 'Accesso in corso...' : 'Accedi' }}
-      </button>
-
-      @if (errore) {
-        <p class="errore">{{ errore }}</p>
-      }
-    </form>
+    @if (errore) {
+      <p class="errore">{{ errore }}</p>
+    }
   </div>
 </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { ApiService } from '../../api';
 
 @Component({
@@ -14,7 +15,11 @@ export class ClientiComponent implements OnInit {
   loading = true;
   errore = '';
 
-  constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private api: ApiService,
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+  ) {}
 
   ngOnInit() {
     this.caricaClienti();
@@ -38,5 +43,10 @@ export class ClientiComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  nuovoOrdine(cliente: any): void {
+    sessionStorage.setItem('selectedCustomerForOrder', JSON.stringify(cliente));
+    void this.router.navigate(['/ordini/nuovo']);
   }
 }

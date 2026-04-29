@@ -36,88 +36,92 @@
       BS Solution - Tirocinio
     </a>
 
-    <div style="display: flex; align-items: center; height: 100%">
-      <a
-        routerLink="/prodotti"
-        style="
-          display: flex;
-          align-items: center;
-          padding: 0 20px;
-          color: white;
-          text-decoration: none;
-          font-weight: 500;
-        "
-      >
-        Prodotti
-      </a>
+    <div style="display: flex; align-items: center; height: 100%; gap: 8px">
+      @if (auth.isLoggedIn()) {
+        <span style="margin-right: 10px; font-size: 14px; opacity: 0.9">
+          {{ auth.getUserName() }}
+        </span>
 
-      <a
-        routerLink="/clienti"
-        style="
-          display: flex;
-          align-items: center;
-          padding: 0 20px;
-          color: white;
-          text-decoration: none;
-          font-weight: 500;
-        "
-      >
-        Clienti
-      </a>
+        <a
+          routerLink="/prodotti"
+          style="
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+          "
+        >
+          Prodotti
+        </a>
 
-      <a
-        routerLink="/ordini"
-        style="
-          display: flex;
-          align-items: center;
-          padding: 0 20px;
-          color: white;
-          text-decoration: none;
-          font-weight: 500;
-        "
-      >
-        Ordini
-      </a>
+        <a
+          routerLink="/clienti"
+          style="
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+          "
+        >
+          Clienti
+        </a>
 
-      <a
-        *ngIf="!auth.isLoggedIn()"
-        routerLink="/login"
-        style="
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-left: 20px;
-          padding: 8px 14px;
-          background: #3b82f6;
-          border-radius: 6px;
-          color: white;
-          text-decoration: none;
-          font-weight: 600;
-        "
-      >
-        Login
-      </a>
+        <a
+          routerLink="/ordini"
+          style="
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+          "
+        >
+          Ordini
+        </a>
 
-      <button
-        *ngIf="auth.isLoggedIn()"
-        type="button"
-        (click)="logout()"
-        style="
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-left: 20px;
-          padding: 8px 14px;
-          background: #ef4444;
-          border: none;
-          border-radius: 6px;
-          color: white;
-          font-weight: 600;
-          cursor: pointer;
-        "
-      >
-        Logout
-      </button>
+        <button
+          type="button"
+          (click)="logout()"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 20px;
+            padding: 8px 14px;
+            background: #ef4444;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+          "
+        >
+          Logout
+        </button>
+      } @else {
+        <a
+          routerLink="/login"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 20px;
+            padding: 8px 14px;
+            background: #3b82f6;
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+          "
+        >
+          Login Microsoft
+        </a>
+      }
     </div>
   </div>
 

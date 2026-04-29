@@ -13,10 +13,12 @@
         <h3 class="nome">{{ cliente.nome }}</h3>
 
         <p class="info">Codice: {{ cliente.codiceCliente }}</p>
-
         <p class="info">Email: {{ cliente.email }}</p>
-
         <p class="info">Indirizzo: {{ cliente.indirizzo }}</p>
+
+        <button class="new-order-btn" (click)="nuovoOrdine(cliente)">
+          + Nuovo ordine
+        </button>
       </div>
     }
   </div>

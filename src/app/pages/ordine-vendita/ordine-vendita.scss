@@ -1,0 +1,64 @@
+.page-wrapper {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.box {
+  padding: 16px;
+  border-radius: 10px;
+}
+
+.righe-wrapper {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.riga-box {
+  padding: 14px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+}
+
+.riga-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.remove-btn {
+  cursor: pointer;
+}
+
+.errore {
+  margin-top: 12px;
+}
+
+.successo {
+  margin-top: 12px;
+}

@@ -1,74 +1,268 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map, switchMap, of } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
+import { AuthenticationResult, AccountInfo, RedirectRequest, SilentRequest } from '@azure/msal-browser';
+import { msalInstance, BC_SCOPES } from './auth-config';
+
+export type LoginErrorCode =
+  | 'REDIRECT_FAILED'
+  | 'ACCESS_TOKEN_MISSING'
+  | 'EMAIL_NOT_FOUND'
+  | 'AGENT_NOT_FOUND'
+  | 'BC_REQUEST_FAILED'
+  | 'TOKEN_REFRESH_FAILED'
+  | 'UNKNOWN_ERROR';
+
+export type LoginResult =
+  | { ok: true }
+  | { ok: false; code: LoginErrorCode; message: string };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
+  private baseUrl =
+    'https://api.businesscentral.dynamics.com/v2.0/6b99dd4b-9681-4414-8a12-1beeb67853f9/Sandbox_BC27/ODataV4/Company(Id=14fae42a-0299-f011-a7b1-6045bdc8dcac)/AgentLoginWS';
 
-  private token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlFaZ045SHFOa0dORU00R2VLY3pEMDJQY1Z2NCIsImtpZCI6IlFaZ045SHFOa0dORU00R2VLY3pEMDJQY1Z2NCJ9.eyJhdWQiOiJodHRwczovL2FwaS5idXNpbmVzc2NlbnRyYWwuZHluYW1pY3MuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvNmI5OWRkNGItOTY4MS00NDE0LThhMTItMWJlZWI2Nzg1M2Y5LyIsImlhdCI6MTc3NDI4MTk2MywibmJmIjoxNzc0MjgxOTYzLCJleHAiOjE3NzQyODc0MjYsImFjciI6IjEiLCJhaW8iOiJBWFFBaS84YkFBQUErTVo2L1kzV3hGeXBNTUhvc2RxNWtzNHdXMTYyY0ZTUEVaSnNaS3BSZEQrSlZUR3NmK1R1bjRkWUUrN0dPeGhaSy8rcjVGYzNZOHc0U0R2dDNNYVlwTWU0ZDlGemF4Z3ZmRFdodFNNZFZDc0NmVExJd3huRjRJWkJ6QjRYSzFXbnpFWEsrcHhYR29TelFNOGppNXYxcmc9PSIsImFtciI6WyJwd2QiXSwiYXBwaWQiOiJlMjY1ODFiNy1iOGZkLTQ1Y2YtODYxMC1iODc1NzBkMWM0ZDkiLCJhcHBpZGFjciI6IjEiLCJmYW1pbHlfbmFtZSI6IjAxIiwiZ2l2ZW5fbmFtZSI6IlN0YWdlIiwiaWR0eXAiOiJ1c2VyIiwiaXBhZGRyIjoiMmEwMTplMTE6MzAxMDo0ODMwOjNjNGQ6MTc0MDoyZGU0OmUzMDYiLCJuYW1lIjoiU3RhZ2UwMSIsIm9pZCI6IjEyMzBjMzM2LWUyZDQtNGRmMS1iNjFlLWNmNzEyOTllMGU5ZCIsInB1aWQiOiIxMDAzMjAwMjEwQUI1Rjg2IiwicmgiOiIxLkFYTUFTOTJaYTRHV0ZFU0tFaHZ1dG5oVC1UM3ZiWmxzczFOQmhnZW1fVHdCdUo4QUFPTnpBQS4iLCJzY3AiOiJGaW5hbmNpYWxzLlJlYWRXcml0ZS5BbGwgdXNlcl9pbXBlcnNvbmF0aW9uIiwic2lkIjoiMDAyZTFjY2EtMDRjYy05YTdlLTdiMDctY2RmZDEzMWViY2Q0Iiwic3ViIjoiUDRqZjJaT0RpNUs1X3J4LVJIc0pPMEo4b243bUJYX0ZGd04wR3p0Qm1UWSIsInRpZCI6IjZiOTlkZDRiLTk2ODEtNDQxNC04YTEyLTFiZWViNjc4NTNmOSIsInVuaXF1ZV9uYW1lIjoiU3RhZ2UwMUBic3NybC5pdCIsInVwbiI6IlN0YWdlMDFAYnNzcmwuaXQiLCJ1dGkiOiJnNXV2MEYzYXFFeWtqMEdXUVBjQ0FBIiwidmVyIjoiMS4wIiwid2lkcyI6WyJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXSwieG1zX2FjdF9mY3QiOiI5IDMiLCJ4bXNfZnRkIjoid0Z1TDgzQWU0S3BNZFkwQnlPdTkxb2VqMEhvWW5XdnJaLWJseTJxWUNxd0JabkpoYm1ObFl5MWtjMjF6IiwieG1zX2lkcmVsIjoiMSAzMCIsInhtc19zdWJfZmN0IjoiMyA4In0.XFiRfx3ksuO57ETCpuwuJefspzipOP2cS7ETD4vmWSVw0LytnX-hW55KFXWpJK9ZZmYIOrm9TmQXR5YvJ3Pm8NXB1ZwnSCcw4RypwV1pWmPPaAe83HVIJOYocMz7b3S3GzIx8LxLuBLap6LxISVqQU2COUMMP9lFk_wD3rtpECp9GvyeMmc2t_g-CN-GjDC1bMEZNnkxkcPjRPvZKiFP4UCYZloWSD5Gwv-cqo5iUiXh6IhuWZqSackpsdF842A_oQuhNFQjjXORO7_2xwzps7Fuw4ChzJy8W5Bdarq_y6eSTyG4LU4ORiFWAbFvXaeqskpvgFmgBhNh9PmRp8LPMQ';
-
-  private baseUrl = "https://api.businesscentral.dynamics.com/v2.0/6b99dd4b-9681-4414-8a12-1beeb67853f9/Sandbox_BC27/ODataV4/Company(Id=14fae42a-0299-f011-a7b1-6045bdc8dcac)/AgentLoginWS";
+  private initPromise?: Promise<void>;
 
   constructor(private http: HttpClient) {}
 
-  private getHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      Authorization: `Bearer ${this.token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json'
-    });
+  private fail(code: LoginErrorCode, message: string): LoginResult {
+    return { ok: false, code, message };
   }
 
-  private escapeODataString(value: string): string {
-    return value.replace(/'/g, "''");
+  private async initMsal(): Promise<void> {
+    if (!this.initPromise) {
+      this.initPromise = msalInstance.initialize();
+    }
+    await this.initPromise;
   }
 
-  login(email: string, password: string): Observable<boolean> {
-    const safeEmail = this.escapeODataString(email.trim());
-    const findUrl = `${this.baseUrl}?$filter=E_Mail eq '${safeEmail}'`;
+  async startMicrosoftLogin(redirectAfterLogin?: string): Promise<void> {
+    await this.initMsal();
 
-    return this.http.get<any>(findUrl, { headers: this.getHeaders() }).pipe(
-      switchMap((res) => {
-        const agent = res?.value?.[0];
+    const target = redirectAfterLogin && redirectAfterLogin !== '/login' ? redirectAfterLogin : '/home';
+    sessionStorage.setItem('post_login_redirect', target);
 
-        if (!agent || !agent.Code) {
-          return of(false);
-        }
+    const request: RedirectRequest = {
+      scopes: BC_SCOPES,
+      prompt: 'select_account',
+    };
 
-        const agentCode = agent.Code;
-        const verifyUrl = `${this.baseUrl}('${agentCode}')/NAV.VerifyCredentials`;
+    await msalInstance.loginRedirect(request);
+  }
 
-        const body = {
-          email: email.trim(),
-          userPassword: password
-        };
+  async completeMicrosoftRedirect(): Promise<LoginResult | null> {
+    await this.initMsal();
 
-        return this.http.post<any>(verifyUrl, body, { headers: this.getHeaders() }).pipe(
-          map((loginRes) => {
-            const result = loginRes?.value ?? '';
+    let authResult: AuthenticationResult | null = null;
+    try {
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout MSAL: handleRedirectPromise non ha risposto.')), 12000)
+      );
+      authResult = await Promise.race([
+        msalInstance.handleRedirectPromise(),
+        timeoutPromise,
+      ]);
+    } catch (e: any) {
+      console.error('[AuthService] handleRedirectPromise fallito:', e);
+      return this.fail(
+        'REDIRECT_FAILED',
+        e?.errorMessage || e?.message || 'Errore durante il completamento del login Microsoft.'
+      );
+    }
 
-            if (typeof result === 'string' && result.startsWith('Success:')) {
-              localStorage.setItem('isLoggedIn', 'true');
-              localStorage.setItem('userEmail', email.trim());
-              localStorage.setItem('userName', result.replace('Success:', '').trim());
-              localStorage.setItem('agentCode', agentCode);
-              return true;
-            }
+    if (!authResult) {
+      return null;
+    }
 
-            return false;
-          })
+    if (authResult.account) {
+      msalInstance.setActiveAccount(authResult.account);
+    }
+
+    const account = authResult.account ?? msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0] ?? null;
+    if (!account) {
+      return this.fail('ACCESS_TOKEN_MISSING', 'Login Microsoft completato, ma nessun account è disponibile.');
+    }
+
+    let token = authResult.accessToken;
+    if (!token) {
+      try {
+        token = await this.acquireBusinessCentralToken(account);
+      } catch (e: any) {
+        console.error('[AuthService] Token BC non ottenuto dopo redirect:', e);
+        return this.fail(
+          'ACCESS_TOKEN_MISSING',
+          e?.message || 'Login Microsoft riuscito, ma non è stato restituito un access token per Business Central.'
         );
-      })
+      }
+    }
+
+    const emails = this.extractEmailsFromAuthResult(authResult, account);
+    console.log('[AuthService] Email candidate da account/idToken:', emails);
+
+    return this.loadProfile(token, emails);
+  }
+
+  private async acquireBusinessCentralToken(account: AccountInfo): Promise<string> {
+    const request: SilentRequest = {
+      scopes: BC_SCOPES,
+      account,
+    };
+
+    const result = await msalInstance.acquireTokenSilent(request);
+    return result.accessToken;
+  }
+
+  private async loadProfile(token: string, emails: string[]): Promise<LoginResult> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+
+    if (emails.length === 0) {
+      console.error('[AuthService] Nessuna email trovata in account/idTokenClaims.');
+      return this.fail(
+        'EMAIL_NOT_FOUND',
+        'Login Microsoft riuscito, ma il token non contiene un indirizzo email o username utilizzabile.'
+      );
+    }
+
+    let lastError: any = null;
+
+    for (const originalEmail of emails) {
+      const email = originalEmail.trim();
+      if (!email) continue;
+
+      const safeEmail = email.replace(/'/g, "''");
+      const normalizedEmail = safeEmail.toLowerCase();
+
+      const candidateUrls = [
+        `${this.baseUrl}?$filter=tolower(E_Mail) eq '${normalizedEmail}'`,
+        `${this.baseUrl}?$filter=E_Mail eq '${safeEmail}'`,
+      ];
+
+      console.log('[AuthService] Ricerca agente BC con email:', email);
+
+      for (const url of candidateUrls) {
+        try {
+          const res = await firstValueFrom(this.http.get<any>(url, { headers }));
+          console.log('[AuthService] Risposta OData BC:', res);
+
+          const agent = res?.value?.[0];
+          if (agent?.Code) {
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('accessToken', token);
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userName', String(agent.Name ?? email).trim());
+            localStorage.setItem('agentCode', String(agent.Code).trim());
+            console.log('[AuthService] Login riuscito — Agente:', agent.Code);
+            return { ok: true };
+          }
+        } catch (e: any) {
+          lastError = e;
+          console.error(
+            '[AuthService] Errore OData BC per email',
+            email,
+            ':',
+            e?.status,
+            e?.statusText,
+            e?.error,
+          );
+        }
+      }
+    }
+
+    if (lastError?.status && lastError.status !== 404) {
+      return this.fail(
+        'BC_REQUEST_FAILED',
+        `Errore durante la verifica dell'agente su Business Central (${lastError.status}).`
+      );
+    }
+
+    return this.fail(
+      'AGENT_NOT_FOUND',
+      `Utente autenticato, ma nessun agente Business Central corrisponde alle email trovate: ${emails.join(', ')}`
     );
   }
 
+  private extractEmailsFromAuthResult(authResult: AuthenticationResult, account?: AccountInfo | null): string[] {
+    const claims: any = authResult.idTokenClaims ?? {};
+    const resolvedAccount: AccountInfo | null = account ?? authResult.account ?? msalInstance.getActiveAccount() ?? null;
+
+    const candidates = [
+      resolvedAccount?.username,
+      claims.preferred_username,
+      claims.upn,
+      claims.email,
+      claims.unique_name,
+      claims.login_hint,
+    ];
+
+    return Array.from(
+      new Set(
+        candidates
+          .filter((value): value is string => typeof value === 'string')
+          .map((value) => value.trim())
+          .filter(Boolean)
+      )
+    );
+  }
+
+  getPostLoginRedirect(): string {
+    const target = sessionStorage.getItem('post_login_redirect') || '/home';
+    sessionStorage.removeItem('post_login_redirect');
+    return target;
+  }
+
+  async getToken(): Promise<string> {
+    await this.initMsal();
+
+    const account = msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0] ?? null;
+    if (!account) {
+      throw new Error('Nessun account Microsoft disponibile. Effettua di nuovo il login.');
+    }
+
+    msalInstance.setActiveAccount(account);
+
+    try {
+      const result = await msalInstance.acquireTokenSilent({
+        scopes: BC_SCOPES,
+        account,
+      });
+      localStorage.setItem('accessToken', result.accessToken);
+      return result.accessToken;
+    } catch (silentError) {
+      console.error('[AuthService] acquireTokenSilent fallito:', silentError);
+      this.logout();
+      throw new Error('Impossibile rinnovare il token Microsoft. Effettua di nuovo il login.');
+    }
+  }
+
+  async ensureSession(): Promise<boolean> {
+    const token = localStorage.getItem('accessToken');
+    if (!token || localStorage.getItem('isLoggedIn') !== 'true') return false;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      if (Date.now() >= payload.exp * 1000) {
+        await this.getToken();
+      }
+      return true;
+    } catch {
+      this.logout();
+      return false;
+    }
+  }
+
   logout(): void {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('agentCode');
+    ['isLoggedIn', 'accessToken', 'userEmail', 'userName', 'agentCode'].forEach((k) =>
+      localStorage.removeItem(k)
+    );
+
+    sessionStorage.removeItem('post_login_redirect');
   }
 
   isLoggedIn(): boolean {

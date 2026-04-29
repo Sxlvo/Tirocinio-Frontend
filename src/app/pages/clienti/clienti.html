@@ -1,25 +1,71 @@
-<h2>Clienti</h2>
+<div class="clienti-page">
+  <div class="page-header">
+    <div>
+      <h2>Clienti</h2>
+      <p class="subtitle">Elenco dei clienti</p>
+    </div>
 
-<button class="reload-btn" (click)="caricaClienti()">Ricarica</button>
-
-@if (loading) {
-  <p class="loading">Sto caricando i clienti dal server... ⏳</p>
-} @else if (errore) {
-  <p class="errore">{{ errore }}</p>
-} @else {
-  <div class="clienti-container">
-    @for (cliente of listaClienti; track cliente.id) {
-      <div class="cliente-card">
-        <h3 class="nome">{{ cliente.nome }}</h3>
-
-        <p class="info">Codice: {{ cliente.codiceCliente }}</p>
-        <p class="info">Email: {{ cliente.email }}</p>
-        <p class="info">Indirizzo: {{ cliente.indirizzo }}</p>
-
-        <button class="new-order-btn" (click)="nuovoOrdine(cliente)">
-          + Nuovo ordine
-        </button>
-      </div>
-    }
+    <button type="button" class="reload-btn" (click)="caricaClienti()">
+      Ricarica
+    </button>
   </div>
-}
+
+  <div class="info-box">
+    <div>
+      <span>Clienti visualizzati</span>
+      <strong>{{ listaClienti.length }}</strong>
+    </div>
+  </div>
+
+  @if (loading) {
+    <p class="loading">Sto caricando i clienti dal server...</p>
+  } @else if (errore) {
+    <p class="errore">{{ errore }}</p>
+  } @else if (listaClienti.length === 0) {
+    <div class="empty-state">
+      Nessun cliente trovato.
+    </div>
+  } @else {
+    <div class="clienti-container">
+      @for (cliente of listaClienti; track cliente.id) {
+        <div class="cliente-card">
+          <div class="cliente-header">
+            <span class="cliente-code">
+              {{ cliente.codiceCliente || '-' }}
+            </span>
+
+            <h3 class="nome">
+              {{ cliente.nome || '-' }}
+            </h3>
+          </div>
+
+          <div class="cliente-info">
+            <div>
+              <span>Email</span>
+              <strong class="truncate">
+                {{ cliente.email || '-' }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Indirizzo</span>
+              <strong>
+                {{ cliente.indirizzo || '-' }}
+              </strong>
+            </div>
+          </div>
+
+          <div class="cliente-actions">
+            <button
+              type="button"
+              class="new-order-btn"
+              (click)="nuovoOrdine(cliente)"
+            >
+              + Nuovo ordine
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

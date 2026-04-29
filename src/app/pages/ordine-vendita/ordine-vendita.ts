@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -32,6 +32,7 @@ export class OrdineVenditaComponent implements OnInit {
   formPronto = false;
 
   prodotti: any[] = [];
+  righeListinoVendita: any[] = [];
 
   righeOrdine: RigaOrdineForm[] = [
     {
@@ -71,10 +72,39 @@ export class OrdineVenditaComponent implements OnInit {
     forkJoin({
       indirizzi: this.api.getIndirizziSpedizione(this.cliente.codiceCliente),
       prodotti: this.api.getProdotti(),
+      righeListino: this.api.getRigheListinoVendita(this.cliente.codiceCliente),
     }).subscribe({
-      next: ({ indirizzi, prodotti }) => {
+      next: ({ indirizzi, prodotti, righeListino }) => {
+        console.log('PRODOTTI DA BUSINESS CENTRAL:', prodotti?.value);
+
         this.indirizziSpedizione = indirizzi?.value ?? [];
-        this.prodotti = prodotti?.value ?? [];
+        this.righeListinoVendita = righeListino?.value ?? [];
+
+        const prodottiBase = prodotti?.value ?? [];
+
+        this.prodotti = prodottiBase.map((prodotto: any) => {
+          const prezzoListino = this.trovaPrezzoPerCliente(
+            prodotto.codiceArticolo,
+            this.cliente.codiceCliente,
+            this.righeListinoVendita,
+          );
+
+          const unitaMisura =
+            prodotto.unitaMisura ??
+            prodotto.baseUnitOfMeasure ??
+            prodotto.unitOfMeasureCode ??
+            prodotto.unitOfMeasure ??
+            prodotto.baseUnitOfMeasureCode ??
+            prodotto.unitaMisuraBase ??
+            '';
+
+          return {
+            ...prodotto,
+            prezzoBase: Number(prodotto.prezzoUnitario ?? 0),
+            prezzoUnitario: prezzoListino ?? Number(prodotto.prezzoUnitario ?? 0),
+            unitaMisura,
+          };
+        });
 
         if (this.indirizziSpedizione.length > 1) {
           this.mostraSceltaIndirizzo = true;
@@ -100,6 +130,64 @@ export class OrdineVenditaComponent implements OnInit {
     });
   }
 
+  private trovaPrezzoPerCliente(
+    codiceArticolo: string,
+    codiceCliente: string,
+    righeListino: any[],
+  ): number | null {
+    const oggi = new Date();
+    oggi.setHours(0, 0, 0, 0);
+
+    const righeValide = righeListino.filter((riga) => {
+      const itemNo = String(riga.itemNo ?? '').trim();
+      const sourceNo = String(riga.sourceNo ?? '').trim();
+
+      if (itemNo !== String(codiceArticolo).trim()) {
+        return false;
+      }
+
+      if (sourceNo && sourceNo !== String(codiceCliente).trim()) {
+        return false;
+      }
+
+      if (riga.startingDate) {
+        const dataInizio = new Date(riga.startingDate);
+        dataInizio.setHours(0, 0, 0, 0);
+
+        if (dataInizio > oggi) {
+          return false;
+        }
+      }
+
+      if (riga.endingDate) {
+        const dataFine = new Date(riga.endingDate);
+        dataFine.setHours(0, 0, 0, 0);
+
+        if (dataFine < oggi) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    const prezzoCliente = righeValide.find(
+      (riga) => String(riga.sourceNo ?? '').trim() === String(codiceCliente).trim(),
+    );
+
+    if (prezzoCliente) {
+      return Number(prezzoCliente.unitPrice ?? 0);
+    }
+
+    const prezzoGenerale = righeValide.find((riga) => String(riga.sourceNo ?? '').trim() === '');
+
+    if (prezzoGenerale) {
+      return Number(prezzoGenerale.unitPrice ?? 0);
+    }
+
+    return null;
+  }
+
   confermaIndirizzo(): void {
     if (!this.indirizzoSelezionatoId) {
       this.errore = 'Seleziona un indirizzo di spedizione';
@@ -118,9 +206,10 @@ export class OrdineVenditaComponent implements OnInit {
       return null;
     }
 
-    return this.indirizziSpedizione.find(
-      (x) => String(x.id) === String(this.indirizzoSelezionatoId),
-    ) ?? null;
+    return (
+      this.indirizziSpedizione.find((x) => String(x.id) === String(this.indirizzoSelezionatoId)) ??
+      null
+    );
   }
 
   getProdottoById(productId: string): any | null {
@@ -128,9 +217,32 @@ export class OrdineVenditaComponent implements OnInit {
       return null;
     }
 
-    return this.prodotti.find(
-      (p) => String(p.id) === String(productId),
-    ) ?? null;
+    return this.prodotti.find((p) => String(p.id) === String(productId)) ?? null;
+  }
+
+  getPrezzoUnitarioRiga(riga: RigaOrdineForm): number {
+    const prodotto = this.getProdottoById(riga.productId);
+
+    return Number(prodotto?.prezzoUnitario ?? 0);
+  }
+
+  getUnitaMisuraRiga(riga: RigaOrdineForm): string {
+    const prodotto = this.getProdottoById(riga.productId);
+
+    return String(prodotto?.unitaMisura ?? '').trim();
+  }
+
+  getTotaleRiga(riga: RigaOrdineForm): number {
+    const prezzoUnitario = this.getPrezzoUnitarioRiga(riga);
+    const quantita = Number(riga.quantity ?? 0);
+
+    return prezzoUnitario * quantita;
+  }
+
+  getTotaleOrdine(): number {
+    return this.righeOrdine.reduce((totale, riga) => {
+      return totale + this.getTotaleRiga(riga);
+    }, 0);
   }
 
   aggiungiRiga(): void {
@@ -138,6 +250,7 @@ export class OrdineVenditaComponent implements OnInit {
       productId: '',
       quantity: 1,
     });
+
     this.cdr.detectChanges();
   }
 
@@ -150,7 +263,6 @@ export class OrdineVenditaComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  //si occupa di sommare eventuali righe con lo stesso prodotto, in modo da inviare alla API solo righe uniche per prodotto
   private compattaRighe(): RigaOrdineForm[] {
     const mappa = new Map<string, number>();
 
@@ -172,7 +284,6 @@ export class OrdineVenditaComponent implements OnInit {
     }));
   }
 
-  // si occupa di validare le righe dell'ordine, verificando che siano state inserite correttamente prima di inviare la richiesta alla API
   private validaRighe(): string {
     if (!this.righeOrdine.length) {
       return 'Inserisci almeno una riga ordine';
@@ -190,6 +301,7 @@ export class OrdineVenditaComponent implements OnInit {
       }
 
       const prodotto = this.getProdottoById(riga.productId);
+
       if (!prodotto?.codiceArticolo) {
         return `Prodotto non valido nella riga ${i + 1}`;
       }
@@ -198,7 +310,6 @@ export class OrdineVenditaComponent implements OnInit {
     return '';
   }
 
-  //si occupa di creare il payload per la creazione dell'ordine, includendo i dati del cliente, l'indirizzo di spedizione e il codice dell'agente di vendita
   private creaPayloadOrdine(): any {
     const shipping = this.indirizzoSelezionato;
     const salespersonCode = (localStorage.getItem('agentCode') ?? '').trim();
@@ -224,7 +335,7 @@ export class OrdineVenditaComponent implements OnInit {
 
     return ordinePayload;
   }
-  // fa il ciclo di creazione delle righe dell'ordine, creando una riga alla volta in modo sequenziale per gestire eventuali errori specifici di una riga senza compromettere l'intero ordine
+
   private creaRigaPayload(numeroOrdine: string, riga: RigaOrdineForm): any {
     const prodotto = this.getProdottoById(riga.productId);
 
@@ -232,9 +343,11 @@ export class OrdineVenditaComponent implements OnInit {
       numeroOrdine,
       codiceArticolo: prodotto.codiceArticolo,
       quantita: riga.quantity,
+      prezzoUnitario: this.getPrezzoUnitarioRiga(riga),
+      unitaMisura: this.getUnitaMisuraRiga(riga),
     };
   }
-  // si occupa di creare le righe dell'ordine in modo sequenziale, gestendo eventuali errori specifici di una riga senza compromettere l'intero ordine e aggiornando lo stato dell'applicazione al termine del processo
+
   private creaRigheOrdineSequenziali(
     numeroOrdine: string,
     righeCompattate: RigaOrdineForm[],
@@ -262,7 +375,7 @@ export class OrdineVenditaComponent implements OnInit {
       },
     });
   }
-  // fa il ciclo di creazione dell'ordine, validando i dati inseriti, creando l'ordine e poi le righe dell'ordine in modo sequenziale, gestendo eventuali errori e aggiornando lo stato dell'applicazione di conseguenza
+
   creaOrdine(): void {
     this.errore = '';
     this.successo = '';
@@ -274,6 +387,7 @@ export class OrdineVenditaComponent implements OnInit {
     }
 
     const erroreRighe = this.validaRighe();
+
     if (erroreRighe) {
       this.errore = erroreRighe;
       this.cdr.detectChanges();
@@ -314,7 +428,7 @@ export class OrdineVenditaComponent implements OnInit {
       },
     });
   }
-  
+
   tornaAiClienti(): void {
     void this.router.navigate(['/clienti']);
   }

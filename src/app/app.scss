@@ -1,0 +1,130 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  margin: 0;
+}
+
+:host::ng-deep body {
+  margin: 0;
+  padding: 0;
+  background-color: #f4f6f9;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background-color: #f4f6f9;
+  font-family: Arial, sans-serif;
+}
+
+.topbar {
+  height: 70px;
+  padding: 0 24px;
+  background: linear-gradient(135deg, #0078d4, #00a6a6);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 16px rgba(0, 120, 212, 0.22);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.nav-area {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 8px;
+}
+
+.user-pill {
+  margin-right: 10px;
+  font-size: 14px;
+  opacity: 0.95;
+  background: rgba(255, 255, 255, 0.14);
+  padding: 7px 10px;
+  border-radius: 999px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 14px;
+  padding: 8px 14px;
+  background: rgba(239, 68, 68, 0.95);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}
+
+.login-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 20px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-btn:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.main-content {
+  padding: 40px;
+}
+
+@media (max-width: 800px) {
+  .topbar {
+    height: auto;
+    padding: 16px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .nav-area {
+    width: 100%;
+    flex-wrap: wrap;
+    height: auto;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+}

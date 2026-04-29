@@ -1,21 +1,75 @@
-<h2>Prodotti</h2>
+<div class="prodotti-page">
+  <div class="page-header">
+    <div>
+      <h2>Prodotti</h2>
+      <p class="subtitle">Catalogo prodotti disponibili</p>
+    </div>
 
-<button class="reload-btn" (click)="caricaProdotti()">Ricarica</button>
-
-@if (loading) {
-  <p class="loading">Sto caricando i prodotti dal server... ⏳</p>
-} @else if (errore) {
-  <p class="errore">{{ errore }}</p>
-} @else {
-  <div class="prodotti-container">
-    @for (prodotto of listaProdotti; track prodotto.id) {
-      <div class="prodotto-card">
-        <h3 class="nome">{{ prodotto.descrizione }}</h3>
-
-        <p class="codice">Codice: {{ prodotto.codiceArticolo }}</p>
-
-        <p class="prezzo">{{ prodotto.prezzoUnitario }} €</p>
-      </div>
-    }
+    <button type="button" class="reload-btn" (click)="caricaProdotti()">
+      Ricarica
+    </button>
   </div>
-}
+
+  <div class="info-box">
+    <div>
+      <span>Prodotti visualizzati</span>
+      <strong>{{ listaProdotti.length }}</strong>
+    </div>
+  </div>
+
+  @if (loading) {
+    <p class="loading">Sto caricando i prodotti dal server...</p>
+  } @else if (errore) {
+    <p class="errore">{{ errore }}</p>
+  } @else if (listaProdotti.length === 0) {
+    <div class="empty-state">
+      Nessun prodotto trovato.
+    </div>
+  } @else {
+    <div class="prodotti-container">
+      @for (prodotto of listaProdotti; track prodotto.id) {
+        <div class="prodotto-card">
+          <div class="prodotto-image-box">
+            @if (prodotto.imageUrl) {
+              <img
+                class="prodotto-image"
+                [src]="prodotto.imageUrl"
+                [alt]="prodotto.descrizione || prodotto.codiceArticolo"
+              />
+            } @else {
+              <div class="prodotto-placeholder">
+                {{ prodotto.codiceArticolo || 'PROD' }}
+              </div>
+            }
+          </div>
+
+          <div class="prodotto-content">
+            <span class="prodotto-code">
+              {{ prodotto.codiceArticolo || '-' }}
+            </span>
+
+            <h3 class="prodotto-title">
+              {{ prodotto.descrizione || '-' }}
+            </h3>
+
+            <div class="prodotto-info">
+              <div>
+                <span>Prezzo base</span>
+                <strong>
+                  € {{ prodotto.prezzoUnitario || 0 | number:'1.2-2' }}
+                </strong>
+              </div>
+
+              <div>
+                <span>Unità misura</span>
+                <strong>
+                  {{ prodotto.unitaMisura || '-' }}
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

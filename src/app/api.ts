@@ -30,19 +30,34 @@ export class ApiService {
 
   getProdotti(): Observable<any> {
     return this.getHeaders$().pipe(
-      switchMap((headers) => this.http.get<any>(`${this.baseUrl}prodotti`, { headers })),
+      switchMap((headers) =>
+        this.http.get<any>(`${this.baseUrl}prodotti`, { headers }),
+      ),
     );
   }
 
   getClienti(): Observable<any> {
     return this.getHeaders$().pipe(
-      switchMap((headers) => this.http.get<any>(`${this.baseUrl}clienti`, { headers })),
+      switchMap((headers) =>
+        this.http.get<any>(`${this.baseUrl}clienti`, { headers }),
+      ),
+    );
+  }
+
+  getClientiByAgente(agentCode: string): Observable<any> {
+    const safeCode = agentCode.trim().replace(/'/g, "''");
+    const url = `${this.baseUrl}clienti?$filter=salespersonCode eq '${safeCode}'`;
+
+    return this.getHeaders$().pipe(
+      switchMap((headers) => this.http.get<any>(url, { headers })),
     );
   }
 
   getOrdini(): Observable<any> {
     return this.getHeaders$().pipe(
-      switchMap((headers) => this.http.get<any>(`${this.baseUrl}ordini`, { headers })),
+      switchMap((headers) =>
+        this.http.get<any>(`${this.baseUrl}ordini`, { headers }),
+      ),
     );
   }
 
@@ -64,6 +79,17 @@ export class ApiService {
     );
   }
 
+  getRigheListinoVendita(customerNo: string): Observable<any> {
+  const safeCustomerNo = customerNo.trim().replace(/'/g, "''");
+
+  const filter = `sourceNo eq '${safeCustomerNo}' or sourceNo eq ''`;
+  const url = `${this.baseUrl}righeListinoVendita?$filter=${encodeURIComponent(filter)}`;
+
+  return this.getHeaders$().pipe(
+    switchMap((headers) => this.http.get<any>(url, { headers })),
+  );
+}
+
   createOrdine(payload: any): Observable<any> {
     return this.getHeaders$().pipe(
       switchMap((headers) =>
@@ -79,12 +105,4 @@ export class ApiService {
       ),
     );
   }
-  getClientiByAgente(agentCode: string): Observable<any> {
-  const safeCode = agentCode.trim().replace(/'/g, "''");
-  const url = `${this.baseUrl}clienti?$filter=salespersonCode eq '${safeCode}'`;
-
-  return this.getHeaders$().pipe(
-    switchMap((headers) => this.http.get<any>(url, { headers })),
-  );
-}
 }

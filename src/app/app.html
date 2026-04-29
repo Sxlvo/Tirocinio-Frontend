@@ -1,28 +1,6 @@
-<div style="min-height: 100vh; background-color: #f4f6f9; font-family: Arial, sans-serif">
-  <div
-    style="
-      background-color: #1f2937;
-      padding: 0 40px;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 70px;
-    "
-  >
-    <a
-      routerLink="/"
-      style="
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: white;
-        text-decoration: none;
-        font-size: 18px;
-        font-weight: bold;
-        cursor: pointer;
-      "
-    >
+<div class="app-shell">
+  <header class="topbar">
+    <a routerLink="/" class="brand">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="30"
@@ -33,99 +11,31 @@
         <path d="M3 11.5L12 4l9 7.5v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-8z" />
       </svg>
 
-      BS Solution - Tirocinio
+      <span>BS Solution - Tirocinio</span>
     </a>
 
-    <div style="display: flex; align-items: center; height: 100%; gap: 8px">
+    <nav class="nav-area">
       @if (auth.isLoggedIn()) {
-        <span style="margin-right: 10px; font-size: 14px; opacity: 0.9">
+        <span class="user-pill">
           {{ auth.getUserName() }}
         </span>
 
-        <a
-          routerLink="/prodotti"
-          style="
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-          "
-        >
-          Prodotti
-        </a>
+        <a routerLink="/prodotti" class="nav-link">Prodotti</a>
+        <a routerLink="/clienti" class="nav-link">Clienti</a>
+        <a routerLink="/ordini" class="nav-link">Ordini</a>
 
-        <a
-          routerLink="/clienti"
-          style="
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-          "
-        >
-          Clienti
-        </a>
-
-        <a
-          routerLink="/ordini"
-          style="
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-          "
-        >
-          Ordini
-        </a>
-
-        <button
-          type="button"
-          (click)="logout()"
-          style="
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: 20px;
-            padding: 8px 14px;
-            background: #ef4444;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-          "
-        >
+        <button type="button" class="logout-btn" (click)="logout()">
           Logout
         </button>
       } @else {
-        <a
-          routerLink="/login"
-          style="
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: 20px;
-            padding: 8px 14px;
-            background: #3b82f6;
-            border-radius: 6px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-          "
-        >
+        <a routerLink="/login" class="login-btn">
           Login Microsoft
         </a>
       }
-    </div>
-  </div>
+    </nav>
+  </header>
 
-  <div style="padding: 40px">
+  <main class="main-content">
     <router-outlet></router-outlet>
-  </div>
+  </main>
 </div>

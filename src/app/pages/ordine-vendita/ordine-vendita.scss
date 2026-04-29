@@ -5,8 +5,15 @@
 }
 
 .box {
-  padding: 16px;
-  border-radius: 10px;
+  padding: 18px;
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.cliente-grid {
+  display: grid;
+  gap: 4px;
 }
 
 .righe-wrapper {
@@ -16,9 +23,10 @@
 }
 
 .riga-box {
-  padding: 14px;
+  padding: 16px;
   border: 1px solid #dcdcdc;
-  border-radius: 10px;
+  border-radius: 12px;
+  background: #fafafa;
 }
 
 .riga-header {
@@ -26,6 +34,22 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+}
+
+.riga-header h4 {
+  margin: 0;
+}
+
+.riga-grid {
+  display: grid;
+  grid-template-columns: 1fr 120px 170px 170px;
+  gap: 14px;
+  align-items: end;
+  margin-top: 14px;
+}
+
+.campo-prodotto {
+  min-width: 0;
 }
 
 label {
@@ -40,8 +64,65 @@ select,
 textarea {
   width: 100%;
   padding: 10px;
+  border: 1px solid #cfcfcf;
   border-radius: 8px;
   box-sizing: border-box;
+  background: #ffffff;
+}
+
+.prezzo-box {
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid #d3d3d3;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.prezzo-label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 4px;
+  opacity: 0.75;
+}
+
+.prezzo-box strong {
+  display: block;
+  font-size: 18px;
+}
+
+.prezzo-box small {
+  display: block;
+  margin-top: 3px;
+}
+
+.totale-riga strong {
+  font-size: 20px;
+}
+
+.totale-ordine-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.totale-ordine-box {
+  min-width: 220px;
+  padding: 12px 16px;
+  border: 2px solid #222222;
+  border-radius: 12px;
+  text-align: right;
+  background: #f8f8f8;
+}
+
+.totale-ordine-box span {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.totale-ordine-box strong {
+  display: block;
+  font-size: 24px;
 }
 
 .actions {
@@ -51,14 +132,96 @@ textarea {
   flex-wrap: wrap;
 }
 
-.remove-btn {
+.ordine-bottom-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  width: 100%;
+  margin-top: 36px;
+}
+
+.ordine-bottom-left {
+  justify-self: start;
+  display: flex;
+}
+
+.ordine-bottom-right {
+  justify-self: end;
+  display: flex;
+  gap: 10px;
+}
+
+#vai-agli-ordini-btn {
+  justify-self: start;
+}
+
+button {
+  padding: 10px 14px;
+  border: 1px solid #222222;
+  border-radius: 8px;
   cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.remove-btn {
+  border-color: #b00020;
 }
 
 .errore {
   margin-top: 12px;
+  color: #b00020;
+  font-weight: 600;
 }
 
 .successo {
   margin-top: 12px;
+  color: #087f23;
+  font-weight: 600;
+}
+
+.loading {
+  margin-top: 16px;
+}
+
+@media (max-width: 1000px) {
+  .riga-grid {
+    grid-template-columns: 1fr 120px;
+  }
+}
+
+@media (max-width: 700px) {
+  .riga-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .totale-ordine-wrapper {
+    justify-content: stretch;
+  }
+
+  .totale-ordine-box {
+    width: 100%;
+  }
+
+  .ordine-bottom-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .ordine-bottom-left,
+  .ordine-bottom-right {
+    justify-self: stretch;
+  }
+
+  .ordine-bottom-right {
+    display: grid;
+  }
+
+  .ordine-bottom-actions button {
+    width: 100%;
+  }
 }

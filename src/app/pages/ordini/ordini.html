@@ -1,27 +1,88 @@
-<h2>Ordini</h2>
+<div class="ordini-page">
+  <div class="page-header">
+    <div>
+      <h2>Ordini</h2>
 
-<div class="filtro-info">
-  <p><strong>Utente:</strong> {{ userName }}</p>
-  <p><strong>Codice agente:</strong> {{ agentCode }}</p>
-  <p><strong>Filtro attivo:</strong> ordini associati all'agente loggato</p>
-</div>
+      <p class="subtitle">
+        Elenco degli ordini associati all’agente loggato
+      </p>
+    </div>
 
-<button class="reload-btn" (click)="caricaOrdini()">Ricarica</button>
-
-@if (loading) {
-  <p class="loading">Sto caricando gli ordini dal server... ⏳</p>
-} @else if (errore) {
-  <p class="errore">{{ errore }}</p>
-} @else {
-  <div class="ordini-container">
-    @for (ordine of listaOrdini; track ordine.id) {
-      <div class="ordine-card">
-        <h3>Ordine: {{ ordine.numeroOrdine }}</h3>
-
-        <p>Numero Cliente: {{ ordine.numeroCliente }}</p>
-        <p>Stato: {{ ordine.stato }}</p>
-        <p>Totale: {{ ordine.totaleOrdine }} €</p>
-      </div>
-    }
+    <button type="button" class="btn-secondary" (click)="caricaOrdini()">
+      Ricarica
+    </button>
   </div>
-}
+
+  <div class="info-box">
+    <div>
+      <span>Utente</span>
+      <strong>{{ userName || '-' }}</strong>
+    </div>
+
+    <div>
+      <span>Codice agente</span>
+      <strong>{{ agentCode || '-' }}</strong>
+    </div>
+
+    <div>
+      <span>Ordini visualizzati</span>
+      <strong>{{ listaOrdini.length }}</strong>
+    </div>
+  </div>
+
+  @if (loading) {
+    <p class="loading">Caricamento ordini...</p>
+  }
+
+  @if (errore) {
+    <p class="errore">{{ errore }}</p>
+  }
+
+  @if (!loading && listaOrdini.length === 0 && !errore) {
+    <div class="empty-state">
+      Nessun ordine trovato.
+    </div>
+  }
+
+  @if (!loading && listaOrdini.length > 0) {
+    <div class="table-wrapper">
+      <table class="ordini-table">
+        <thead>
+          <tr>
+            <th>Ordine</th>
+            <th>Cliente</th>
+            <th>Nome cliente</th>
+            <th>Data documento</th>
+            <th class="text-right">Totale</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (ordine of listaOrdini; track ordine.id) {
+            <tr>
+              <td>
+                <strong>{{ ordine.numeroOrdine }}</strong>
+              </td>
+
+              <td>
+                {{ ordine.numeroCliente || '-' }}
+              </td>
+
+              <td>
+                {{ ordine.nomeCliente || '-' }}
+              </td>
+
+              <td>
+                {{ ordine.dataDocumento || '-' }}
+              </td>
+
+              <td class="text-right totale">
+                € {{ ordine.totaleOrdine || ordine.totale || 0 | number:'1.2-2' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

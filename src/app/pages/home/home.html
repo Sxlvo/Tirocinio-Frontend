@@ -1,40 +1,49 @@
-<div class="home-container">
+<div class="home-page">
+  <section class="hero">
+    <div class="hero-content">
+      <div class="bc-logo-box">
+        <img src="/business-central-logo.png" alt="Business Central" class="bc-logo" />
+      </div>
 
-  <!-- TITOLO -->
-  <h2 class="welcome" *ngIf="auth.isLoggedIn()">
-    Benvenuto {{ auth.getUserName() }}
-  </h2>
+      <div>
+        <h1>Dashboard agente</h1>
+        <p>Gestisci clienti, prodotti e ordini di vendita collegati a Business Central.</p>
+      </div>
+    </div>
+  </section>
 
-  <!-- BOX -->
-  <div class="cards">
+  <section class="quick-actions">
+    <div class="action-card" routerLink="/prodotti">
+      <div class="card-icon">📦</div>
 
-    <!-- PRODOTTI -->
-    <div
-      routerLink="/prodotti"
-      class="card"
-    >
-      <h3>Prodotti</h3>
-      <p>Visualizza catalogo</p>
+      <div>
+        <h3>Prodotti</h3>
+        <p>Consulta il catalogo prodotti, prezzi base e unità di misura.</p>
+      </div>
+
+      <span class="card-link">Apri prodotti</span>
     </div>
 
-    <!-- CLIENTI -->
-    <div
-      routerLink="/clienti"
-      class="card"
-    >
-      <h3>Clienti</h3>
-      <p>Anagrafica clienti</p>
+    <div class="action-card primary" routerLink="/clienti">
+      <div class="card-icon">👥</div>
+
+      <div>
+        <h3>Clienti</h3>
+        <p>Visualizza i clienti assegnati e crea un nuovo ordine di vendita.</p>
+      </div>
+
+      <span class="card-link">Apri clienti</span>
     </div>
 
-    <!-- ORDINI -->
-    <div
-      routerLink="/ordini"
-      class="card"
-    >
-      <h3>Ordini</h3>
-      <p>Lista ordini</p>
+    <div class="action-card" routerLink="/ordini">
+      <div class="card-icon">🧾</div>
+
+      <div>
+        <h3>Ordini</h3>
+        <p>Controlla gli ordini creati e il totale associato a ciascun ordine.</p>
+      </div>
+
+      <span class="card-link">Apri ordini</span>
     </div>
-
-  </div>
-
+  </section>
 </div>

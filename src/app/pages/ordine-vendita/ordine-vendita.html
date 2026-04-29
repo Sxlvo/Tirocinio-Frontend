@@ -1,17 +1,20 @@
 <h2>Nuovo ordine vendita</h2>
 
 @if (loading) {
-  <p class="loading">Sto caricando dati cliente, indirizzi e prodotti... ⏳</p>
+  <p class="loading">Sto caricando dati cliente, indirizzi e prodotti...</p>
 } @else if (errore && !formPronto && !mostraSceltaIndirizzo) {
   <p class="errore">{{ errore }}</p>
-  <button (click)="tornaAiClienti()">Torna ai clienti</button>
+  <button type="button" (click)="tornaAiClienti()">Torna ai clienti</button>
 } @else {
   <div class="page-wrapper">
     <div class="box">
       <h3>Cliente selezionato</h3>
-      <p><strong>Codice:</strong> {{ cliente?.codiceCliente }}</p>
-      <p><strong>Nome:</strong> {{ cliente?.nome }}</p>
-      <p><strong>Indirizzo principale:</strong> {{ cliente?.indirizzo || '-' }}</p>
+
+      <div class="cliente-grid">
+        <p><strong>Codice:</strong> {{ cliente?.codiceCliente }}</p>
+        <p><strong>Nome:</strong> {{ cliente?.nome }}</p>
+        <p><strong>Indirizzo principale:</strong> {{ cliente?.indirizzo || '-' }}</p>
+      </div>
     </div>
 
     @if (mostraSceltaIndirizzo) {
@@ -23,13 +26,14 @@
 
           @for (indirizzo of indirizziSpedizione; track indirizzo.id) {
             <option [value]="indirizzo.id">
-              {{ indirizzo.code }} - {{ indirizzo.name }} - {{ indirizzo.address }} {{ indirizzo.city }}
+              {{ indirizzo.code }} - {{ indirizzo.name }} - {{ indirizzo.address }}
+              {{ indirizzo.city }}
             </option>
           }
         </select>
 
         <div class="actions">
-          <button (click)="confermaIndirizzo()">Conferma indirizzo</button>
+          <button type="button" (click)="confermaIndirizzo()">Conferma indirizzo</button>
           <button type="button" (click)="tornaAiClienti()">Annulla</button>
         </div>
       </div>
@@ -41,8 +45,11 @@
 
         <p>
           <strong>Spedizione selezionata:</strong>
+
           @if (indirizzoSelezionato) {
-            {{ indirizzoSelezionato.name }} - {{ indirizzoSelezionato.address }} {{ indirizzoSelezionato.city }}
+            {{ indirizzoSelezionato.name }} -
+            {{ indirizzoSelezionato.address }}
+            {{ indirizzoSelezionato.city }}
           } @else {
             indirizzo principale cliente
           }
@@ -61,30 +68,61 @@
                 }
               </div>
 
-              <label [for]="'prodotto-' + $index">Prodotto</label>
-              <select [id]="'prodotto-' + $index" [(ngModel)]="riga.productId">
-                <option value="">-- seleziona prodotto --</option>
+              <div class="riga-grid">
+                <div class="campo-prodotto">
+                  <label [for]="'prodotto-' + $index">Prodotto</label>
 
-                @for (prodotto of prodotti; track prodotto.id) {
-                  <option [value]="prodotto.id">
-                    {{ prodotto.codiceArticolo }} - {{ prodotto.descrizione }}
-                  </option>
-                }
-              </select>
+                  <select [id]="'prodotto-' + $index" [(ngModel)]="riga.productId">
+                    <option value="">-- seleziona prodotto --</option>
 
-              <label [for]="'quantita-' + $index">Quantità</label>
-              <input
-                [id]="'quantita-' + $index"
-                type="number"
-                min="1"
-                [(ngModel)]="riga.quantity"
-              />
+                    @for (prodotto of prodotti; track prodotto.id) {
+                      <option [value]="prodotto.id">
+                        {{ prodotto.codiceArticolo }} - {{ prodotto.descrizione }} - €
+                        {{ prodotto.prezzoUnitario | number: '1.2-2' }}
+                      </option>
+                    }
+                  </select>
+                </div>
+
+                <div>
+                  <label [for]="'quantita-' + $index">Quantità</label>
+
+                  <input
+                    [id]="'quantita-' + $index"
+                    type="number"
+                    min="1"
+                    [(ngModel)]="riga.quantity"
+                  />
+                </div>
+
+                <div class="prezzo-box">
+                  <span class="prezzo-label">Prezzo unitario</span>
+
+                  <strong> € {{ getPrezzoUnitarioRiga(riga) | number: '1.2-2' }} </strong>
+
+                  <small> per {{ getUnitaMisuraRiga(riga) || '-' }} </small>
+                </div>
+
+                <div class="prezzo-box totale-riga">
+                  <span class="prezzo-label">Totale riga</span>
+
+                  <strong> € {{ getTotaleRiga(riga) | number: '1.2-2' }} </strong>
+                </div>
+              </div>
             </div>
           }
         </div>
 
         <div class="actions">
           <button type="button" (click)="aggiungiRiga()">+ Aggiungi prodotto</button>
+        </div>
+
+        <div class="totale-ordine-wrapper">
+          <div class="totale-ordine-box">
+            <span>Totale ordine</span>
+
+            <strong> € {{ getTotaleOrdine() | number: '1.2-2' }} </strong>
+          </div>
         </div>
 
         @if (errore) {
@@ -95,20 +133,29 @@
           <p class="successo">{{ successo }}</p>
         }
 
-        <div class="actions">
-          <button [disabled]="saving" (click)="creaOrdine()">
-            {{ saving ? 'Salvataggio...' : 'Crea ordine' }}
-          </button>
+        <div class="ordine-bottom-actions">
+          <div class="ordine-bottom-left">
+            @if (numeroOrdineCreato) {
+              <button
+                id="vai-agli-ordini-btn"
+                type="button"
+                [disabled]="saving"
+                (click)="vaiAOrdini()"
+              >
+                Vai agli ordini
+              </button>
+            }
+          </div>
 
-          <button type="button" [disabled]="saving" (click)="tornaAiClienti()">
-            Torna ai clienti
-          </button>
-
-          @if (numeroOrdineCreato) {
-            <button type="button" [disabled]="saving" (click)="vaiAOrdini()">
-              Vai agli ordini
+          <div class="ordine-bottom-right">
+            <button type="button" [disabled]="saving" (click)="tornaAiClienti()">
+              Torna ai clienti
             </button>
-          }
+
+            <button type="button" [disabled]="saving" (click)="creaOrdine()">
+              {{ saving ? 'Salvataggio...' : 'Crea ordine' }}
+            </button>
+          </div>
         </div>
       </div>
     }

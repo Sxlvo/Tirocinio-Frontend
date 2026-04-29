@@ -1,34 +1,182 @@
-.home-container {
-  margin-top: 40px;
+.home-page {
+  display: grid;
+  gap: 22px;
 }
 
-.welcome {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.cards {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-}
-
-.card {
-  background: white;
+.hero {
   padding: 30px;
-  width: 200px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0078d4, #00a6a6);
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 120, 212, 0.22);
+}
+
+.hero-content {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 24px;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 800;
+}
+
+.hero p {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: #eefcff;
+  font-size: 17px;
+}
+
+.bc-logo-box {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.bc-logo {
+  max-width: 108px;
+  max-height: 70px;
+  object-fit: contain;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.action-card {
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid #d6e8f5;
+  border-radius: 16px;
+  background: #ffffff;
   cursor: pointer;
-  text-align: center;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
 
-.card p {
-  color: #777;
+.action-card:hover {
+  transform: translateY(-2px);
+  border-color: #0078d4;
+  box-shadow: 0 8px 22px rgba(0, 120, 212, 0.12);
 }
 
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+.action-card.primary {
+  background: linear-gradient(180deg, #ffffff, #f5fbff);
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #e6f4fb;
+  font-size: 22px;
+}
+
+.action-card h3 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.action-card p {
+  margin: 6px 0 0;
+  color: #5f6f7a;
+  line-height: 1.4;
+}
+
+.card-link {
+  margin-top: 6px;
+  font-weight: 700;
+  color: #0078d4;
+}
+
+.workflow-box {
+  padding: 22px;
+  border: 1px solid #d6e8f5;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.workflow-box h2 {
+  margin: 0 0 16px;
+  font-size: 24px;
+}
+
+.workflow-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.step {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #f5fbff;
+  border: 1px solid #e0f0fa;
+}
+
+.step span {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #0078d4;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.step strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.step p {
+  margin: 0;
+  color: #5f6f7a;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .hero-content {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 24px;
+}
+
+  .bc-logo-box {
+    width: fit-content;
+  }
+
+  .quick-actions,
+  .workflow-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .hero h1 {
+    font-size: 28px;
+  }
 }

@@ -150,6 +150,7 @@ export class OrdineVenditaComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  //si occupa di sommare eventuali righe con lo stesso prodotto, in modo da inviare alla API solo righe uniche per prodotto
   private compattaRighe(): RigaOrdineForm[] {
     const mappa = new Map<string, number>();
 
@@ -171,6 +172,7 @@ export class OrdineVenditaComponent implements OnInit {
     }));
   }
 
+  // si occupa di validare le righe dell'ordine, verificando che siano state inserite correttamente prima di inviare la richiesta alla API
   private validaRighe(): string {
     if (!this.righeOrdine.length) {
       return 'Inserisci almeno una riga ordine';
@@ -196,6 +198,7 @@ export class OrdineVenditaComponent implements OnInit {
     return '';
   }
 
+  //si occupa di creare il payload per la creazione dell'ordine, includendo i dati del cliente, l'indirizzo di spedizione e il codice dell'agente di vendita
   private creaPayloadOrdine(): any {
     const shipping = this.indirizzoSelezionato;
     const salespersonCode = (localStorage.getItem('agentCode') ?? '').trim();
@@ -221,7 +224,7 @@ export class OrdineVenditaComponent implements OnInit {
 
     return ordinePayload;
   }
-
+  // fa il ciclo di creazione delle righe dell'ordine, creando una riga alla volta in modo sequenziale per gestire eventuali errori specifici di una riga senza compromettere l'intero ordine
   private creaRigaPayload(numeroOrdine: string, riga: RigaOrdineForm): any {
     const prodotto = this.getProdottoById(riga.productId);
 
@@ -231,7 +234,7 @@ export class OrdineVenditaComponent implements OnInit {
       quantita: riga.quantity,
     };
   }
-
+  // si occupa di creare le righe dell'ordine in modo sequenziale, gestendo eventuali errori specifici di una riga senza compromettere l'intero ordine e aggiornando lo stato dell'applicazione al termine del processo
   private creaRigheOrdineSequenziali(
     numeroOrdine: string,
     righeCompattate: RigaOrdineForm[],
@@ -259,7 +262,7 @@ export class OrdineVenditaComponent implements OnInit {
       },
     });
   }
-
+  // fa il ciclo di creazione dell'ordine, validando i dati inseriti, creando l'ordine e poi le righe dell'ordine in modo sequenziale, gestendo eventuali errori e aggiornando lo stato dell'applicazione di conseguenza
   creaOrdine(): void {
     this.errore = '';
     this.successo = '';
@@ -311,7 +314,7 @@ export class OrdineVenditaComponent implements OnInit {
       },
     });
   }
-
+  
   tornaAiClienti(): void {
     void this.router.navigate(['/clienti']);
   }

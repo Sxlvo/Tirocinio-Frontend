@@ -1,177 +1,346 @@
 .clienti-page {
   display: grid;
-  gap: 18px;
+  gap: 22px;
+  padding: 24px;
+  color: #102033;
 }
 
-.page-header {
+/* HEADER */
+
+.clienti-page .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
+  padding: 22px 24px;
+  border: 1px solid rgba(0, 120, 212, 0.14);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(0, 120, 212, 0.08), rgba(0, 166, 166, 0.08)),
+    #ffffff;
+  box-shadow: 0 8px 24px rgba(16, 32, 51, 0.06);
 }
 
-.page-header h2 {
+.clienti-page .page-header h2 {
   margin: 0;
-  font-size: 30px;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0f2438;
 }
 
-.subtitle {
-  margin: 6px 0 0;
-  color: #666;
+.clienti-page .subtitle {
+  margin: 8px 0 0;
+  color: #667085;
+  font-size: 15px;
 }
 
-.info-box {
+/* INFO BOX */
+
+.clienti-page .info-box {
   display: inline-grid;
-  grid-template-columns: minmax(180px, 240px);
+  grid-template-columns: minmax(180px, 260px);
   gap: 14px;
-  padding: 16px;
-  border: 1px solid #dcdcdc;
-  border-radius: 14px;
+  width: fit-content;
+}
+
+.clienti-page .info-box > div {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 20px;
+  border: 1px solid #e6edf3;
+  border-radius: 16px;
   background: #ffffff;
+  box-shadow: 0 8px 22px rgba(16, 32, 51, 0.05);
 }
 
-.info-box span {
+.clienti-page .info-box > div::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, #0078d4, #00a6a6);
+}
+
+.clienti-page .info-box span {
   display: block;
-  margin-bottom: 4px;
-  font-size: 13px;
-  color: #666;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #7a8797;
 }
 
-.info-box strong {
+.clienti-page .info-box strong {
   display: block;
   font-size: 18px;
+  font-weight: 800;
+  color: #102033;
 }
 
-.clienti-container {
+/* GRID CLIENTI */
+
+.clienti-page .clienti-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
+  gap: 18px;
 }
 
-.cliente-card {
+/* CARD CLIENTE */
+
+.clienti-page .cliente-card {
   display: grid;
   gap: 16px;
-  padding: 18px;
-  border: 1px solid #dcdcdc;
-  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #e3eaf1;
+  border-radius: 18px;
   background: #ffffff;
+  box-shadow: 0 10px 28px rgba(16, 32, 51, 0.06);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
-.cliente-card:hover {
-  border-color: #bdbdbd;
-  box-shadow: 0 6px 18px #1F2937;
+.clienti-page .cliente-card:hover {
+  transform: translateY(-2px);
+  border-color: #0078d4;
+  box-shadow: 0 8px 22px rgba(0, 120, 212, 0.12);
 }
 
-.cliente-header {
+.clienti-page .cliente-header {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
-.cliente-code {
+.clienti-page .cliente-code {
   width: fit-content;
-  padding: 4px 9px;
+  padding: 6px 11px;
   border-radius: 999px;
-  background: #f1f1f1;
-  color: #333;
+  background: rgba(0, 120, 212, 0.1);
+  color: #005fa8;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
-.nome {
+.clienti-page .nome {
   margin: 0;
-  font-size: 20px;
+  color: #102033;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
-.cliente-info {
+/* DATI CLIENTE */
+
+.clienti-page .cliente-info {
   display: grid;
   gap: 12px;
 }
 
-.cliente-info span {
+.clienti-page .cliente-info > div {
+  padding: 12px 14px;
+  border: 1px solid #edf1f5;
+  border-radius: 12px;
+  background: #f9fbfd;
+}
+
+.clienti-page .cliente-info span {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
   font-size: 12px;
-  color: #666;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #7a8797;
 }
 
-.cliente-info strong {
+.clienti-page .cliente-info strong {
   display: block;
+  color: #223044;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.truncate {
+.clienti-page .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.cliente-actions {
+/* AZIONI */
+
+.clienti-page .cliente-actions {
   display: flex;
   justify-content: flex-end;
-  padding-top: 8px;
-  border-top: 1px solid #eeeeee;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid #edf1f5;
 }
 
-.new-order-btn {
-  padding: 10px 14px;
-  border: 1px solid #222222;
-  border-radius: 8px;
-  background: #001e31;
+/* BUTTONS */
+
+.clienti-page button {
+  font-family: inherit;
+}
+
+.clienti-page .new-order-btn,
+.clienti-page .reload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  min-height: 42px;
+  padding: 11px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.clienti-page .new-order-btn {
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, #0078d4, #00a6a6);
   color: #ffffff;
-  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(0, 120, 212, 0.22);
 }
 
-.new-order-btn:hover {
-  background: #1F2937;
+.clienti-page .new-order-btn:hover {
+  background: linear-gradient(135deg, #006cbd, #009292);
+  box-shadow: 0 10px 22px rgba(0, 120, 212, 0.28);
+  transform: translateY(-1px);
 }
 
-.reload-btn {
-  padding: 10px 14px;
-  border: 1px solid #cfcfcf;
-  border-radius: 8px;
-  background: #ffffff;
-  cursor: pointer;
+.clienti-page .reload-btn {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    linear-gradient(135deg, #0078d4, #00a6a6) border-box;
+  color: #0078d4;
+  box-shadow: 0 6px 16px rgba(16, 32, 51, 0.06);
 }
 
-.reload-btn:hover {
-  background: #f3f3f3;
+.clienti-page .reload-btn:hover {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0078d4, #00a6a6);
+  box-shadow: 0 8px 18px rgba(0, 120, 212, 0.22);
+  transform: translateY(-1px);
 }
 
-.loading {
-  font-weight: 600;
+.clienti-page .new-order-btn:active,
+.clienti-page .reload-btn:active {
+  transform: translateY(0);
 }
 
-.errore {
-  color: #b00020;
-  font-weight: 600;
+.clienti-page .new-order-btn:focus-visible,
+.clienti-page .reload-btn:focus-visible {
+  outline: 3px solid rgba(0, 166, 166, 0.28);
+  outline-offset: 3px;
 }
 
-.empty-state {
-  padding: 24px;
-  border: 1px dashed #cfcfcf;
+/* STATES */
+
+.clienti-page .loading,
+.clienti-page .errore,
+.clienti-page .empty-state {
+  padding: 18px 20px;
   border-radius: 14px;
   background: #ffffff;
-  color: #666;
-  text-align: center;
+  box-shadow: 0 8px 22px rgba(16, 32, 51, 0.05);
 }
 
-@media (max-width: 700px) {
-  .page-header {
-    align-items: flex-start;
+.clienti-page .loading {
+  border: 1px solid rgba(0, 120, 212, 0.2);
+  color: #0078d4;
+  font-weight: 700;
+}
+
+.clienti-page .errore {
+  border: 1px solid rgba(176, 0, 32, 0.2);
+  color: #b00020;
+  font-weight: 700;
+  background: #fff7f8;
+}
+
+.clienti-page .empty-state {
+  padding: 34px 24px;
+  border: 1px dashed #b9c4d0;
+  color: #667085;
+  text-align: center;
+  background:
+    linear-gradient(135deg, rgba(0, 120, 212, 0.04), rgba(0, 166, 166, 0.04)),
+    #ffffff;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .clienti-page {
+    padding: 16px;
+  }
+
+  .clienti-page .page-header {
+    align-items: stretch;
     flex-direction: column;
   }
 
-  .clienti-container {
+  .clienti-page .page-header h2 {
+    font-size: 28px;
+  }
+
+  .clienti-page .info-box {
+    width: 100%;
     grid-template-columns: 1fr;
   }
 
-  .cliente-actions {
+  .clienti-page .clienti-container {
+    grid-template-columns: 1fr;
+  }
+
+  .clienti-page .cliente-actions {
     justify-content: stretch;
   }
 
-  .new-order-btn,
-  .reload-btn {
+  .clienti-page .new-order-btn,
+  .clienti-page .reload-btn {
     width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .clienti-page {
+    padding: 12px;
+  }
+
+  .clienti-page .page-header,
+  .clienti-page .info-box > div,
+  .clienti-page .cliente-card,
+  .clienti-page .loading,
+  .clienti-page .errore,
+  .clienti-page .empty-state {
+    border-radius: 14px;
+  }
+
+  .clienti-page .page-header h2 {
+    font-size: 25px;
+  }
+
+  .clienti-page .subtitle {
+    font-size: 14px;
+  }
+
+  .clienti-page .cliente-card {
+    padding: 16px;
+  }
+
+  .clienti-page .nome {
+    font-size: 19px;
   }
 }

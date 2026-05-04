@@ -73,6 +73,10 @@ export class LoginComponent implements OnInit {
   }
 
   async loginMicrosoft(): Promise<void> {
+    if (this.loading) {
+      return;
+    }
+
     this.errore = '';
     this.loading = true;
 

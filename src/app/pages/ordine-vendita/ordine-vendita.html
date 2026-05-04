@@ -1,163 +1,225 @@
-<h2>Nuovo ordine vendita</h2>
+<div class="nuovo-ordine-page">
+  <h2>Nuovo ordine vendita</h2>
 
-@if (loading) {
-  <p class="loading">Sto caricando dati cliente, indirizzi e prodotti...</p>
-} @else if (errore && !formPronto && !mostraSceltaIndirizzo) {
-  <p class="errore">{{ errore }}</p>
-  <button type="button" (click)="tornaAiClienti()">Torna ai clienti</button>
-} @else {
-  <div class="page-wrapper">
-    <div class="box">
-      <h3>Cliente selezionato</h3>
+  @if (loading) {
+    <p class="loading">Sto caricando dati cliente, indirizzi e prodotti...</p>
+  } @else if (errore && !formPronto && !mostraSceltaIndirizzo) {
+    <p class="errore">{{ errore }}</p>
 
-      <div class="cliente-grid">
-        <p><strong>Codice:</strong> {{ cliente?.codiceCliente }}</p>
-        <p><strong>Nome:</strong> {{ cliente?.nome }}</p>
-        <p><strong>Indirizzo principale:</strong> {{ cliente?.indirizzo || '-' }}</p>
-      </div>
-    </div>
+    <button type="button" (click)="tornaAiClienti()">
+      Torna ai clienti
+    </button>
+  } @else {
+    <div class="page-wrapper">
+      <div class="box cliente-selezionato-box">
+        <div class="cliente-selezionato-header">
+          <div>
+            <span class="section-label">Cliente selezionato</span>
 
-    @if (mostraSceltaIndirizzo) {
-      <div class="box">
-        <h3>Seleziona indirizzo di spedizione</h3>
+            <h3>{{ cliente?.nome || '-' }}</h3>
+          </div>
 
-        <select [(ngModel)]="indirizzoSelezionatoId">
-          <option value="">-- seleziona --</option>
-
-          @for (indirizzo of indirizziSpedizione; track indirizzo.id) {
-            <option [value]="indirizzo.id">
-              {{ indirizzo.code }} - {{ indirizzo.name }} - {{ indirizzo.address }}
-              {{ indirizzo.city }}
-            </option>
-          }
-        </select>
-
-        <div class="actions">
-          <button type="button" (click)="confermaIndirizzo()">Conferma indirizzo</button>
-          <button type="button" (click)="tornaAiClienti()">Annulla</button>
-        </div>
-      </div>
-    }
-
-    @if (formPronto) {
-      <div class="box">
-        <h3>Dati ordine</h3>
-
-        <p>
-          <strong>Spedizione selezionata:</strong>
-
-          @if (indirizzoSelezionato) {
-            {{ indirizzoSelezionato.name }} -
-            {{ indirizzoSelezionato.address }}
-            {{ indirizzoSelezionato.city }}
-          } @else {
-            indirizzo principale cliente
-          }
-        </p>
-
-        <div class="righe-wrapper">
-          @for (riga of righeOrdine; track $index) {
-            <div class="riga-box">
-              <div class="riga-header">
-                <h4>Riga {{ $index + 1 }}</h4>
-
-                @if (righeOrdine.length > 1) {
-                  <button type="button" class="remove-btn" (click)="rimuoviRiga($index)">
-                    Rimuovi
-                  </button>
-                }
-              </div>
-
-              <div class="riga-grid">
-                <div class="campo-prodotto">
-                  <label [for]="'prodotto-' + $index">Prodotto</label>
-
-                  <select [id]="'prodotto-' + $index" [(ngModel)]="riga.productId">
-                    <option value="">-- seleziona prodotto --</option>
-
-                    @for (prodotto of prodotti; track prodotto.id) {
-                      <option [value]="prodotto.id">
-                        {{ prodotto.codiceArticolo }} - {{ prodotto.descrizione }} - €
-                        {{ prodotto.prezzoUnitario | number: '1.2-2' }}
-                      </option>
-                    }
-                  </select>
-                </div>
-
-                <div>
-                  <label [for]="'quantita-' + $index">Quantità</label>
-
-                  <input
-                    [id]="'quantita-' + $index"
-                    type="number"
-                    min="1"
-                    [(ngModel)]="riga.quantity"
-                  />
-                </div>
-
-                <div class="prezzo-box">
-                  <span class="prezzo-label">Prezzo unitario</span>
-
-                  <strong> € {{ getPrezzoUnitarioRiga(riga) | number: '1.2-2' }} </strong>
-
-                  <small> per {{ getUnitaMisuraRiga(riga) || '-' }} </small>
-                </div>
-
-                <div class="prezzo-box totale-riga">
-                  <span class="prezzo-label">Totale riga</span>
-
-                  <strong> € {{ getTotaleRiga(riga) | number: '1.2-2' }} </strong>
-                </div>
-              </div>
-            </div>
-          }
+          <span class="cliente-badge">
+            {{ cliente?.codiceCliente || '-' }}
+          </span>
         </div>
 
-        <div class="actions">
-          <button type="button" (click)="aggiungiRiga()">+ Aggiungi prodotto</button>
-        </div>
+        <div class="cliente-detail-grid">
+          <div class="cliente-detail-item">
+            <span>Codice cliente</span>
+            <strong>{{ cliente?.codiceCliente || '-' }}</strong>
+          </div>
 
-        <div class="totale-ordine-wrapper">
-          <div class="totale-ordine-box">
-            <span>Totale ordine</span>
+          <div class="cliente-detail-item cliente-detail-wide">
+            <span>Nome cliente</span>
+            <strong>{{ cliente?.nome || '-' }}</strong>
+          </div>
 
-            <strong> € {{ getTotaleOrdine() | number: '1.2-2' }} </strong>
+          <div class="cliente-detail-item cliente-detail-full">
+            <span>Indirizzo principale</span>
+            <strong>{{ cliente?.indirizzo || '-' }}</strong>
           </div>
         </div>
+      </div>
 
-        @if (errore) {
-          <p class="errore">{{ errore }}</p>
-        }
+      @if (mostraSceltaIndirizzo) {
+        <div class="box">
+          <h3>Seleziona indirizzo di spedizione</h3>
 
-        @if (successo) {
-          <p class="successo">{{ successo }}</p>
-        }
+          <div class="form-field">
+            <label for="indirizzo-spedizione">Indirizzo di spedizione</label>
 
-        <div class="ordine-bottom-actions">
-          <div class="ordine-bottom-left">
-            @if (numeroOrdineCreato) {
-              <button
-                id="vai-agli-ordini-btn"
-                type="button"
-                [disabled]="saving"
-                (click)="vaiAOrdini()"
-              >
-                Vai agli ordini
-              </button>
+            <select id="indirizzo-spedizione" [(ngModel)]="indirizzoSelezionatoId">
+              <option value="">-- seleziona --</option>
+
+              @for (indirizzo of indirizziSpedizione; track indirizzo.id) {
+                <option [value]="indirizzo.id">
+                  {{ indirizzo.code }} - {{ indirizzo.name }} - {{ indirizzo.address }}
+                  {{ indirizzo.city }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="primary-btn" (click)="confermaIndirizzo()">
+              Conferma indirizzo
+            </button>
+
+            <button type="button" class="secondary-btn" (click)="tornaAiClienti()">
+              Annulla
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (formPronto) {
+        <div class="box">
+          <h3>Dati ordine</h3>
+
+          <div class="spedizione-box">
+            <span>Spedizione selezionata</span>
+
+            <strong>
+              @if (indirizzoSelezionato) {
+                {{ indirizzoSelezionato.name }} -
+                {{ indirizzoSelezionato.address }}
+                {{ indirizzoSelezionato.city }}
+              } @else {
+                indirizzo principale cliente
+              }
+            </strong>
+          </div>
+
+          <div class="righe-wrapper">
+            @for (riga of righeOrdine; track $index) {
+              <div class="riga-box">
+                <div class="riga-header">
+                  <h4>Riga {{ $index + 1 }}</h4>
+
+                  @if (righeOrdine.length > 1) {
+                    <button
+                      type="button"
+                      class="remove-btn"
+                      (click)="rimuoviRiga($index)"
+                    >
+                      Rimuovi
+                    </button>
+                  }
+                </div>
+
+                <div class="riga-grid">
+                  <div class="campo-prodotto">
+                    <label [for]="'prodotto-' + $index">Prodotto</label>
+
+                    <select [id]="'prodotto-' + $index" [(ngModel)]="riga.productId">
+                      <option value="">-- seleziona prodotto --</option>
+
+                      @for (prodotto of prodotti; track prodotto.id) {
+                        <option [value]="prodotto.id">
+                          {{ prodotto.codiceArticolo }} - {{ prodotto.descrizione }} - €
+                          {{ prodotto.prezzoUnitario | number: '1.2-2' }}
+                        </option>
+                      }
+                    </select>
+                  </div>
+
+                  <div>
+                    <label [for]="'quantita-' + $index">Quantità</label>
+
+                    <input
+                      [id]="'quantita-' + $index"
+                      type="number"
+                      min="1"
+                      [(ngModel)]="riga.quantity"
+                    />
+                  </div>
+
+                  <div class="prezzo-box">
+                    <span class="prezzo-label">Prezzo unitario</span>
+
+                    <strong>
+                      € {{ getPrezzoUnitarioRiga(riga) | number: '1.2-2' }}
+                    </strong>
+
+                    <small>
+                      per {{ getUnitaMisuraRiga(riga) || '-' }}
+                    </small>
+                  </div>
+
+                  <div class="prezzo-box totale-riga">
+                    <span class="prezzo-label">Totale riga</span>
+
+                    <strong>
+                      € {{ getTotaleRiga(riga) | number: '1.2-2' }}
+                    </strong>
+                  </div>
+                </div>
+              </div>
             }
           </div>
 
-          <div class="ordine-bottom-right">
-            <button type="button" [disabled]="saving" (click)="tornaAiClienti()">
-              Torna ai clienti
-            </button>
-
-            <button type="button" [disabled]="saving" (click)="creaOrdine()">
-              {{ saving ? 'Salvataggio...' : 'Crea ordine' }}
+          <div class="actions">
+            <button type="button" class="secondary-btn" (click)="aggiungiRiga()">
+              + Aggiungi prodotto
             </button>
           </div>
+
+          <div class="totale-ordine-wrapper">
+            <div class="totale-ordine-box">
+              <span>Totale ordine</span>
+
+              <strong>
+                € {{ getTotaleOrdine() | number: '1.2-2' }}
+              </strong>
+            </div>
+          </div>
+
+          @if (errore) {
+            <p class="errore">{{ errore }}</p>
+          }
+
+          @if (successo) {
+            <p class="successo">{{ successo }}</p>
+          }
+
+          <div class="ordine-bottom-actions">
+            <div class="ordine-bottom-left">
+              @if (numeroOrdineCreato) {
+                <button
+                  id="vai-agli-ordini-btn"
+                  type="button"
+                  class="primary-btn"
+                  [disabled]="saving"
+                  (click)="vaiAOrdini()"
+                >
+                  Vai agli ordini
+                </button>
+              }
+            </div>
+
+            <div class="ordine-bottom-right">
+              <button
+                type="button"
+                class="secondary-btn"
+                [disabled]="saving"
+                (click)="tornaAiClienti()"
+              >
+                Torna ai clienti
+              </button>
+
+              <button
+                type="button"
+                class="primary-btn"
+                [disabled]="saving"
+                (click)="creaOrdine()"
+              >
+                {{ saving ? 'Salvataggio...' : 'Crea ordine' }}
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    }
-  </div>
-}
+      }
+    </div>
+  }
+</div>

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { AuthenticationResult, AccountInfo, RedirectRequest, SilentRequest } from '@azure/msal-browser';
-import { msalInstance, BC_SCOPES } from './auth-config';
+import { msalInstance, BC_SCOPES, MSAL_CONFIG } from './auth-config';
 
 export type LoginErrorCode =
   | 'REDIRECT_FAILED'
@@ -39,6 +39,34 @@ export class AuthService {
       this.initPromise = msalInstance.initialize();
     }
     await this.initPromise;
+  }
+
+  private clearAppSession(): void {
+    ['isLoggedIn', 'accessToken', 'userEmail', 'userName', 'agentCode'].forEach((k) =>
+      localStorage.removeItem(k)
+    );
+
+    sessionStorage.removeItem('post_login_redirect');
+    sessionStorage.removeItem(this.tokenStorageKey);
+  }
+
+  private clearMsalStorage(): void {
+    const clientId = MSAL_CONFIG.auth.clientId.toLowerCase();
+
+    for (const storage of [localStorage, sessionStorage]) {
+      const keysToRemove: string[] = [];
+
+      for (let i = 0; i < storage.length; i++) {
+        const key = storage.key(i);
+        const normalizedKey = key?.toLowerCase() ?? '';
+
+        if (normalizedKey.includes('msal') || normalizedKey.includes(clientId)) {
+          keysToRemove.push(key as string);
+        }
+      }
+
+      keysToRemove.forEach((key) => storage.removeItem(key));
+    }
   }
 
   async startMicrosoftLogin(redirectAfterLogin?: string): Promise<void> {
@@ -267,7 +295,7 @@ export class AuthService {
         return storedToken;
       }
 
-      this.logout();
+      this.clearAppSession();
       throw new Error('Impossibile rinnovare il token Microsoft. Effettua di nuovo il login.');
     }
   }
@@ -279,18 +307,24 @@ export class AuthService {
       await this.getToken();
       return true;
     } catch {
-      this.logout();
+      this.clearAppSession();
       return false;
     }
   }
 
-  logout(): void {
-    ['isLoggedIn', 'accessToken', 'userEmail', 'userName', 'agentCode'].forEach((k) =>
-      localStorage.removeItem(k)
-    );
+  async logout(): Promise<void> {
+    this.clearAppSession();
 
-    sessionStorage.removeItem('post_login_redirect');
-    sessionStorage.removeItem(this.tokenStorageKey);
+    try {
+      await this.initMsal();
+      const account = msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0] ?? null;
+      await msalInstance.clearCache({ account });
+      msalInstance.setActiveAccount(null);
+    } catch (e) {
+      console.warn('[AuthService] Pulizia cache MSAL fallita, pulisco lo storage manualmente:', e);
+    } finally {
+      this.clearMsalStorage();
+    }
   }
 
   isLoggedIn(): boolean {

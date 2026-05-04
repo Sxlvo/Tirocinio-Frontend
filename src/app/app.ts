@@ -16,8 +16,9 @@ export class App {
     private router: Router,
   ) {}
 
-  logout(): void {
-    this.auth.logout();
-    void this.router.navigate(['/login']);
+  async logout(): Promise<void> {
+    await this.auth.logout();
+    await this.router.navigate(['/login']);
+    window.location.assign(window.location.origin);
   }
 }

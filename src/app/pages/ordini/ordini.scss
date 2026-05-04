@@ -35,6 +35,14 @@
   font-size: 15px;
 }
 
+.ordini-page .header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
 /* INFO BOX */
 
 .ordini-page .info-box {
@@ -84,6 +92,7 @@
   font-family: inherit;
 }
 
+.ordini-page .btn-primary,
 .ordini-page .btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -108,6 +117,18 @@
     transform 0.2s ease;
 }
 
+.ordini-page .btn-primary {
+  border-color: transparent;
+  background: linear-gradient(135deg, #0078d4, #00a6a6);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(0, 120, 212, 0.2);
+}
+
+.ordini-page .btn-primary:hover {
+  box-shadow: 0 10px 22px rgba(0, 120, 212, 0.26);
+  transform: translateY(-1px);
+}
+
 .ordini-page .btn-secondary:hover {
   color: #ffffff;
   background: linear-gradient(135deg, #0078d4, #00a6a6);
@@ -115,10 +136,12 @@
   transform: translateY(-1px);
 }
 
+.ordini-page .btn-primary:active,
 .ordini-page .btn-secondary:active {
   transform: translateY(0);
 }
 
+.ordini-page .btn-primary:focus-visible,
 .ordini-page .btn-secondary:focus-visible {
   outline: 3px solid rgba(0, 166, 166, 0.28);
   outline-offset: 3px;
@@ -136,7 +159,7 @@
 
 .ordini-page .ordini-table {
   width: 100%;
-  min-width: 820px;
+  min-width: 1180px;
   border-collapse: collapse;
 }
 
@@ -242,10 +265,15 @@
     flex-direction: column;
   }
 
+  .ordini-page .header-actions {
+    justify-content: stretch;
+  }
+
   .ordini-page .page-header h2 {
     font-size: 28px;
   }
 
+  .ordini-page .btn-primary,
   .ordini-page .btn-secondary {
     width: 100%;
   }

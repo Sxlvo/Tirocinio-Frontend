@@ -1,0 +1,72 @@
+<div class="seleziona-cliente-page">
+  <div class="page-header">
+    <div>
+      <h3>Seleziona il cliente per proseguire con la creazione ordine</h3>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="btn-secondary" (click)="tornaAgliOrdini()">
+        Ordini
+      </button>
+
+      <button type="button" class="btn-secondary" (click)="caricaClienti()">
+        Ricarica
+      </button>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div>
+      <span>Clienti visualizzati</span>
+      <strong>{{ listaClienti.length }}</strong>
+    </div>
+  </div>
+
+  @if (loading) {
+    <p class="loading">Sto caricando i clienti...</p>
+  } @else if (errore) {
+    <p class="errore">{{ errore }}</p>
+  } @else if (listaClienti.length === 0) {
+    <div class="empty-state">
+      Nessun cliente trovato.
+    </div>
+  } @else {
+    <div class="clienti-container">
+      @for (cliente of listaClienti; track cliente.id) {
+        <div class="cliente-card">
+          <div class="cliente-header">
+            <span class="cliente-code">
+              {{ cliente.codiceCliente || '-' }}
+            </span>
+
+            <h3 class="nome">
+              {{ cliente.nome || '-' }}
+            </h3>
+          </div>
+
+          <div class="cliente-info">
+            <div>
+              <span>Email</span>
+              <strong class="truncate">
+                {{ cliente.email || '-' }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Indirizzo</span>
+              <strong>
+                {{ cliente.indirizzo || '-' }}
+              </strong>
+            </div>
+          </div>
+
+          <div class="cliente-actions">
+            <button type="button" class="new-order-btn" (click)="selezionaCliente(cliente)">
+              Seleziona
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

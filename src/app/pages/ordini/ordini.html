@@ -1,16 +1,22 @@
 <div class="ordini-page">
   <div class="page-header">
     <div>
-      <h2>Ordini</h2>
+      <h2>{{ titolo }}</h2>
 
       <p class="subtitle">
         Elenco degli ordini associati all’agente loggato
       </p>
     </div>
 
-    <button type="button" class="btn-secondary" (click)="caricaOrdini()">
-      Ricarica
-    </button>
+    <div class="header-actions">
+      <button type="button" class="btn-primary" (click)="nuovoOrdine()">
+        + Nuovo ordine
+      </button>
+
+      <button type="button" class="btn-secondary" (click)="caricaOrdini()">
+        Ricarica
+      </button>
+    </div>
   </div>
 
   <div class="info-box">
@@ -53,6 +59,9 @@
             <th>Cliente</th>
             <th>Nome cliente</th>
             <th>Data documento</th>
+            <th>Data consegna</th>
+            <th>Indirizzo</th>
+            <th>Città</th>
             <th class="text-right">Totale</th>
           </tr>
         </thead>
@@ -73,9 +82,17 @@
               </td>
 
               <td>
-                {{ ordine.dataDocumento || '-' }}
+                {{ ordine.dataDocumento ? (ordine.dataDocumento | date:'dd/MM/yyyy') : '-' }}
               </td>
-
+              <td>
+                {{ getDataConsegnaVisualizzata(ordine) ? (getDataConsegnaVisualizzata(ordine) | date:'dd/MM/yyyy') : '-' }}
+              </td>
+              <td>
+                {{ ordine.shipToAddress || ordine.indirizzo || '-' }}
+              </td>
+              <td>
+                {{ ordine.shipToCity || ordine.citta || '-' }}
+              </td>
               <td class="text-right totale">
                 € {{ ordine.totaleOrdine || ordine.totale || 0 | number:'1.2-2' }}
               </td>

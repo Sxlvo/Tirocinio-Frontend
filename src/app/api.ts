@@ -70,6 +70,14 @@ export class ApiService {
     );
   }
 
+  getRigheOrdine(): Observable<any> {
+    return this.getHeaders$().pipe(
+      switchMap((headers) =>
+        this.http.get<any>(`${this.baseUrl}righeOrdine`, { headers }),
+      ),
+    );
+  }
+
   getIndirizziSpedizione(customerNo: string): Observable<any> {
     const safeCustomerNo = customerNo.trim().replace(/'/g, "''");
     const url = `${this.baseUrl}indirizziSpedizione?$filter=customerNo eq '${safeCustomerNo}'`;

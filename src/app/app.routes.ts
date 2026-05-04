@@ -33,9 +33,22 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'ordini/seleziona-cliente',
+    loadComponent: () =>
+      import('./pages/seleziona-cliente-ordine/seleziona-cliente-ordine').then(
+        (m) => m.SelezionaClienteOrdineComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'ordini/nuovo',
     loadComponent: () =>
       import('./pages/ordine-vendita/ordine-vendita').then((m) => m.OrdineVenditaComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'ordini/:vista',
+    loadComponent: () => import('./pages/ordini/ordini').then((m) => m.OrdiniComponent),
     canActivate: [authGuard],
   },
 

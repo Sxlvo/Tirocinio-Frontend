@@ -1,23 +1,37 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 
-import { Clienti } from './clienti';
+import { ClientiComponent } from './clienti';
+import { ApiService } from '../../api';
 
-describe('Clienti', () => {
-  let component: Clienti;
-  let fixture: ComponentFixture<Clienti>;
+describe('ClientiComponent', () => {
+  let component: ClientiComponent;
+  let fixture: ComponentFixture<ClientiComponent>;
+  const apiMock = {
+    getClientiByAgente: vi.fn(() => of({ value: [] })),
+  };
 
   beforeEach(async () => {
+    apiMock.getClientiByAgente.mockClear();
+    localStorage.setItem('agentCode', 'AG001');
+
     await TestBed.configureTestingModule({
-      imports: [Clienti]
+      imports: [ClientiComponent],
+      providers: [
+        provideRouter([]),
+        { provide: ApiService, useValue: apiMock },
+      ],
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Clienti);
+    fixture = TestBed.createComponent(ClientiComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+    expect(apiMock.getClientiByAgente).toHaveBeenCalledWith('AG001');
   });
 });

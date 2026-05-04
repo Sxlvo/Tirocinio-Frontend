@@ -21,6 +21,8 @@ export type LoginResult =
   providedIn: 'root',
 })
 export class AuthService {
+  private readonly tokenStorageKey = 'bcAccessToken';
+
   private baseUrl =
     'https://api.businesscentral.dynamics.com/v2.0/6b99dd4b-9681-4414-8a12-1beeb67853f9/Sandbox_BC27/ODataV4/Company(Id=14fae42a-0299-f011-a7b1-6045bdc8dcac)/AgentLoginWS';
 
@@ -112,7 +114,21 @@ export class AuthService {
     };
 
     const result = await msalInstance.acquireTokenSilent(request);
+    sessionStorage.setItem(this.tokenStorageKey, result.accessToken);
     return result.accessToken;
+  }
+
+  private getStoredToken(): string | null {
+    return sessionStorage.getItem(this.tokenStorageKey) || localStorage.getItem('accessToken');
+  }
+
+  private isTokenUsable(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      return Date.now() < payload.exp * 1000;
+    } catch {
+      return false;
+    }
   }
 
   private async loadProfile(token: string, emails: string[]): Promise<LoginResult> {
@@ -154,7 +170,8 @@ export class AuthService {
           const agent = res?.value?.[0];
           if (agent?.Code) {
             localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('accessToken', token);
+            sessionStorage.setItem(this.tokenStorageKey, token);
+            localStorage.removeItem('accessToken');
             localStorage.setItem('userEmail', email);
             localStorage.setItem('userName', String(agent.Name ?? email).trim());
             localStorage.setItem('agentCode', String(agent.Code).trim());
@@ -222,6 +239,13 @@ export class AuthService {
 
     const account = msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0] ?? null;
     if (!account) {
+      const storedToken = this.getStoredToken();
+      if (storedToken && this.isTokenUsable(storedToken)) {
+        sessionStorage.setItem(this.tokenStorageKey, storedToken);
+        localStorage.removeItem('accessToken');
+        return storedToken;
+      }
+
       throw new Error('Nessun account Microsoft disponibile. Effettua di nuovo il login.');
     }
 
@@ -232,24 +256,27 @@ export class AuthService {
         scopes: BC_SCOPES,
         account,
       });
-      localStorage.setItem('accessToken', result.accessToken);
+      sessionStorage.setItem(this.tokenStorageKey, result.accessToken);
       return result.accessToken;
     } catch (silentError) {
       console.error('[AuthService] acquireTokenSilent fallito:', silentError);
+      const storedToken = this.getStoredToken();
+      if (storedToken && this.isTokenUsable(storedToken)) {
+        sessionStorage.setItem(this.tokenStorageKey, storedToken);
+        localStorage.removeItem('accessToken');
+        return storedToken;
+      }
+
       this.logout();
       throw new Error('Impossibile rinnovare il token Microsoft. Effettua di nuovo il login.');
     }
   }
 
   async ensureSession(): Promise<boolean> {
-    const token = localStorage.getItem('accessToken');
-    if (!token || localStorage.getItem('isLoggedIn') !== 'true') return false;
+    if (localStorage.getItem('isLoggedIn') !== 'true') return false;
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-      if (Date.now() >= payload.exp * 1000) {
-        await this.getToken();
-      }
+      await this.getToken();
       return true;
     } catch {
       this.logout();
@@ -263,6 +290,7 @@ export class AuthService {
     );
 
     sessionStorage.removeItem('post_login_redirect');
+    sessionStorage.removeItem(this.tokenStorageKey);
   }
 
   isLoggedIn(): boolean {

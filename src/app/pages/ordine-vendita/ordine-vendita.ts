@@ -69,9 +69,18 @@ export class OrdineVenditaComponent implements OnInit {
       return;
     }
 
+    const agentCode = localStorage.getItem('agentCode')?.trim() ?? '';
+
+    if (!agentCode) {
+      this.errore = 'Codice agente non trovato';
+      this.loading = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
     forkJoin({
       indirizzi: this.api.getIndirizziSpedizione(this.cliente.codiceCliente),
-      prodotti: this.api.getProdotti(),
+      prodotti: this.api.getProdottiByAgente(agentCode),
       righeListino: this.api.getRigheListinoVendita(this.cliente.codiceCliente),
     }).subscribe({
       next: ({ indirizzi, prodotti, righeListino }) => {
@@ -83,25 +92,21 @@ export class OrdineVenditaComponent implements OnInit {
         const prodottiBase = prodotti?.value ?? [];
 
         this.prodotti = prodottiBase.map((prodotto: any) => {
+          const prodottoNormalizzato = this.normalizzaProdottoAgente(prodotto);
           const prezzoListino = this.trovaPrezzoPerCliente(
-            prodotto.codiceArticolo,
+            prodottoNormalizzato.codiceArticolo,
             this.cliente.codiceCliente,
             this.righeListinoVendita,
           );
 
           const unitaMisura =
-            prodotto.unitaMisura ??
-            prodotto.baseUnitOfMeasure ??
-            prodotto.unitOfMeasureCode ??
-            prodotto.unitOfMeasure ??
-            prodotto.baseUnitOfMeasureCode ??
-            prodotto.unitaMisuraBase ??
+            prodottoNormalizzato.unitaMisura ??
             '';
 
           return {
-            ...prodotto,
-            prezzoBase: Number(prodotto.prezzoUnitario ?? 0),
-            prezzoUnitario: prezzoListino ?? Number(prodotto.prezzoUnitario ?? 0),
+            ...prodottoNormalizzato,
+            prezzoBase: Number(prodottoNormalizzato.prezzoUnitario ?? 0),
+            prezzoUnitario: prezzoListino ?? Number(prodottoNormalizzato.prezzoUnitario ?? 0),
             unitaMisura,
           };
         });
@@ -128,6 +133,27 @@ export class OrdineVenditaComponent implements OnInit {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  private normalizzaProdottoAgente(prodotto: any): any {
+    return {
+      ...prodotto,
+      id:
+        prodotto.systemId ??
+        prodotto.id ??
+        `${prodotto.salesPersonCode ?? ''}-${prodotto.itemNo ?? prodotto.codiceArticolo ?? ''}-${prodotto.clusterCode ?? ''}`,
+      codiceArticolo: prodotto.codiceArticolo ?? prodotto.itemNo ?? '',
+      descrizione: prodotto.descrizione ?? prodotto.description ?? '',
+      prezzoUnitario: Number(prodotto.prezzoUnitario ?? prodotto.unitPrice ?? 0),
+      unitaMisura:
+        prodotto.unitaMisura ??
+        prodotto.unitOfMeasure ??
+        prodotto.baseUnitOfMeasure ??
+        prodotto.unitOfMeasureCode ??
+        prodotto.baseUnitOfMeasureCode ??
+        prodotto.unitaMisuraBase ??
+        '',
+    };
   }
 
   private trovaPrezzoPerCliente(

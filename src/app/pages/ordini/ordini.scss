@@ -86,6 +86,67 @@
   color: #102033;
 }
 
+/* SEARCH */
+
+.ordini-page .search-panel {
+  display: grid;
+  gap: 8px;
+  max-width: 560px;
+}
+
+.ordini-page .search-panel label {
+  color: #667085;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ordini-page .search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ordini-page .search-icon {
+  position: absolute;
+  left: 14px;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #667085;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ordini-page .search-icon::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  bottom: -5px;
+  width: 7px;
+  height: 2px;
+  border-radius: 999px;
+  background: #667085;
+  transform: rotate(45deg);
+}
+
+.ordini-page .search-panel input {
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 14px 11px 44px;
+  border: 1px solid #d7e0ea;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #102033;
+  font: inherit;
+  box-shadow: 0 6px 16px rgba(16, 32, 51, 0.04);
+}
+
+.ordini-page .search-panel input:focus {
+  border-color: #0078d4;
+  outline: 3px solid rgba(0, 166, 166, 0.18);
+}
+
 /* BUTTON */
 
 .ordini-page button {
@@ -280,6 +341,10 @@
 
   .ordini-page .info-box {
     grid-template-columns: 1fr;
+  }
+
+  .ordini-page .search-panel {
+    max-width: none;
   }
 
   .ordini-page .ordini-table th,

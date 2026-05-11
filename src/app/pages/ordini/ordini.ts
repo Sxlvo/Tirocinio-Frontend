@@ -24,6 +24,7 @@ export class OrdiniComponent implements OnInit {
   vista: VistaOrdini = 'tutti';
   titolo = 'Ordini';
   sottotitolo = 'Elenco degli ordini associati all agente loggato';
+  searchTerm = '';
 
   constructor(
     private api: ApiService,
@@ -97,6 +98,12 @@ export class OrdiniComponent implements OnInit {
     void this.router.navigate(['/ordini/seleziona-cliente']);
   }
 
+  aggiornaRicerca(event: Event): void {
+    this.searchTerm = (event.target as HTMLInputElement).value;
+    this.applicaFiltroVista();
+    this.cdr.detectChanges();
+  }
+
   private parseVista(vista: string | null): VistaOrdini {
     if (vista === 'giorno' || vista === 'da-evadere' || vista === 'in-consegna') {
       return vista;
@@ -129,22 +136,46 @@ export class OrdiniComponent implements OnInit {
   }
 
   private applicaFiltroVista(): void {
+    let ordiniFiltrati = this.tuttiOrdini;
+
     if (this.vista === 'giorno') {
-      this.listaOrdini = this.tuttiOrdini.filter((ordine) => this.isOrdineDelGiorno(ordine));
+      ordiniFiltrati = ordiniFiltrati.filter((ordine) => this.isOrdineDelGiorno(ordine));
+    } else if (this.vista === 'da-evadere') {
+      ordiniFiltrati = ordiniFiltrati.filter((ordine) => this.isOrdineDaEvadere(ordine));
+    } else if (this.vista === 'in-consegna') {
+      ordiniFiltrati = ordiniFiltrati.filter((ordine) => this.isOrdineInConsegna(ordine));
+    }
+
+    const query = this.normalizzaTesto(this.searchTerm);
+
+    if (!query) {
+      this.listaOrdini = ordiniFiltrati;
       return;
     }
 
-    if (this.vista === 'da-evadere') {
-      this.listaOrdini = this.tuttiOrdini.filter((ordine) => this.isOrdineDaEvadere(ordine));
-      return;
-    }
+    this.listaOrdini = ordiniFiltrati.filter((ordine) => {
+      const dataConsegna = this.getDataConsegnaOrdine(ordine);
+      const testo = [
+        ordine?.numeroOrdine,
+        ordine?.numeroCliente,
+        ordine?.nomeCliente,
+        ordine?.dataDocumento,
+        dataConsegna ? dataConsegna.toLocaleDateString('it-IT') : '',
+        ordine?.shipToAddress,
+        ordine?.indirizzo,
+        ordine?.shipToCity,
+        ordine?.citta,
+        ordine?.stato,
+      ]
+        .map((value) => this.normalizzaTesto(value))
+        .join(' ');
 
-    if (this.vista === 'in-consegna') {
-      this.listaOrdini = this.tuttiOrdini.filter((ordine) => this.isOrdineInConsegna(ordine));
-      return;
-    }
+      return testo.includes(query);
+    });
+  }
 
-    this.listaOrdini = this.tuttiOrdini;
+  private normalizzaTesto(value: any): string {
+    return String(value ?? '').trim().toLowerCase();
   }
 
   private isOrdineDelGiorno(ordine: any): boolean {

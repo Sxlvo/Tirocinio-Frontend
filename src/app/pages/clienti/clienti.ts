@@ -11,9 +11,11 @@ import { ApiService } from '../../api';
   styleUrls: ['./clienti.scss']
 })
 export class ClientiComponent implements OnInit {
+  tuttiClienti: any[] = [];
   listaClienti: any[] = [];
   loading = true;
   errore = '';
+  searchTerm = '';
 
   constructor(
     private api: ApiService,
@@ -28,11 +30,13 @@ export class ClientiComponent implements OnInit {
   caricaClienti() {
     this.loading = true;
     this.errore = '';
+    this.tuttiClienti = [];
     this.listaClienti = [];
 
     this.api.getClienti().subscribe({
       next: (res: any) => {
-        this.listaClienti = res.value ?? [];
+        this.tuttiClienti = res.value ?? [];
+        this.applicaRicerca();
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -43,6 +47,40 @@ export class ClientiComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  aggiornaRicerca(event: Event): void {
+    this.searchTerm = (event.target as HTMLInputElement).value;
+    this.applicaRicerca();
+    this.cdr.detectChanges();
+  }
+
+  private applicaRicerca(): void {
+    const query = this.normalizzaTesto(this.searchTerm);
+
+    if (!query) {
+      this.listaClienti = this.tuttiClienti;
+      return;
+    }
+
+    this.listaClienti = this.tuttiClienti.filter((cliente) => {
+      const testo = [
+        cliente?.codiceCliente,
+        cliente?.nome,
+        cliente?.email,
+        cliente?.indirizzo,
+        cliente?.citta,
+        cliente?.city,
+      ]
+        .map((value) => this.normalizzaTesto(value))
+        .join(' ');
+
+      return testo.includes(query);
+    });
+  }
+
+  private normalizzaTesto(value: any): string {
+    return String(value ?? '').trim().toLowerCase();
   }
 
   nuovoOrdine(cliente: any): void {

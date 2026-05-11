@@ -8,11 +8,12 @@ describe('Prodotti', () => {
   let component: ProdottiComponent;
   let fixture: ComponentFixture<ProdottiComponent>;
   const apiMock = {
-    getProdotti: vi.fn(() => of({ value: [] })),
+    getProdottiByAgente: vi.fn(() => of({ value: [] })),
   };
 
   beforeEach(async () => {
-    apiMock.getProdotti.mockClear();
+    localStorage.setItem('agentCode', 'AG001');
+    apiMock.getProdottiByAgente.mockClear();
 
     await TestBed.configureTestingModule({
       imports: [ProdottiComponent],

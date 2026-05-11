@@ -10,9 +10,12 @@ import { ApiService } from '../../api';
   styleUrls: ['./prodotti.scss']
 })
 export class ProdottiComponent implements OnInit {
+  tuttiProdotti: any[] = [];
   listaProdotti: any[] = [];
   loading = true;
   errore = '';
+  agentCode = '';
+  searchTerm = '';
 
   constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
 
@@ -23,11 +26,23 @@ export class ProdottiComponent implements OnInit {
   caricaProdotti() {
     this.loading = true;
     this.errore = '';
+    this.tuttiProdotti = [];
     this.listaProdotti = [];
+    this.agentCode = localStorage.getItem('agentCode')?.trim() ?? '';
 
-    this.api.getProdotti().subscribe({
+    if (!this.agentCode) {
+      this.loading = false;
+      this.errore = 'Codice agente non trovato';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.api.getProdottiByAgente(this.agentCode).subscribe({
       next: (res: any) => {
-        this.listaProdotti = res.value ?? [];
+        this.tuttiProdotti = (res.value ?? []).map((prodotto: any) =>
+          this.normalizzaProdottoAgente(prodotto),
+        );
+        this.applicaRicerca();
         this.loading = false;
 
         // FIX: forza aggiornamento UI
@@ -42,5 +57,53 @@ export class ProdottiComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  aggiornaRicerca(event: Event): void {
+    this.searchTerm = (event.target as HTMLInputElement).value;
+    this.applicaRicerca();
+    this.cdr.detectChanges();
+  }
+
+  private applicaRicerca(): void {
+    const query = this.normalizzaTesto(this.searchTerm);
+
+    if (!query) {
+      this.listaProdotti = this.tuttiProdotti;
+      return;
+    }
+
+    this.listaProdotti = this.tuttiProdotti.filter((prodotto) => {
+      const testo = [
+        prodotto?.codiceArticolo,
+        prodotto?.itemNo,
+        prodotto?.descrizione,
+        prodotto?.description,
+        prodotto?.clusterCode,
+        prodotto?.unitaMisura,
+      ]
+        .map((value) => this.normalizzaTesto(value))
+        .join(' ');
+
+      return testo.includes(query);
+    });
+  }
+
+  private normalizzaTesto(value: any): string {
+    return String(value ?? '').trim().toLowerCase();
+  }
+
+  private normalizzaProdottoAgente(prodotto: any): any {
+    return {
+      ...prodotto,
+      id:
+        prodotto.systemId ??
+        prodotto.id ??
+        `${prodotto.salesPersonCode ?? ''}-${prodotto.itemNo ?? prodotto.codiceArticolo ?? ''}-${prodotto.clusterCode ?? ''}`,
+      codiceArticolo: prodotto.codiceArticolo ?? prodotto.itemNo ?? '',
+      descrizione: prodotto.descrizione ?? prodotto.description ?? '',
+      prezzoUnitario: Number(prodotto.prezzoUnitario ?? prodotto.unitPrice ?? 0),
+      unitaMisura: prodotto.unitaMisura ?? prodotto.unitOfMeasure ?? '',
+    };
   }
 }

@@ -36,6 +36,22 @@
     </div>
   </div>
 
+  <div class="search-panel">
+    <label for="ordini-search">Cerca ordine</label>
+
+    <div class="search-input-wrap">
+      <span class="search-icon" aria-hidden="true"></span>
+
+      <input
+        id="ordini-search"
+        type="search"
+        [value]="searchTerm"
+        (input)="aggiornaRicerca($event)"
+        placeholder="Numero, cliente, indirizzo, stato o data"
+      />
+    </div>
+  </div>
+
   @if (loading) {
     <p class="loading">Caricamento ordini...</p>
   }

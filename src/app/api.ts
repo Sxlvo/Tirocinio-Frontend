@@ -36,6 +36,15 @@ export class ApiService {
     );
   }
 
+  getProdottiByAgente(agentCode: string): Observable<any> {
+    const safeCode = agentCode.trim().replace(/'/g, "''");
+    const url = `${this.baseUrl}salespersonItemClusters?$filter=salesPersonCode eq '${safeCode}'`;
+
+    return this.getHeaders$().pipe(
+      switchMap((headers) => this.http.get<any>(url, { headers })),
+    );
+  }
+
   getClienti(): Observable<any> {
     return this.getHeaders$().pipe(
       switchMap((headers) =>

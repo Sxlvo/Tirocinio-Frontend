@@ -17,6 +17,22 @@
     </div>
   </div>
 
+  <div class="search-panel">
+    <label for="clienti-search">Cerca cliente</label>
+
+    <div class="search-input-wrap">
+      <span class="search-icon" aria-hidden="true"></span>
+
+      <input
+        id="clienti-search"
+        type="search"
+        [value]="searchTerm"
+        (input)="aggiornaRicerca($event)"
+        placeholder="Nome, codice, email o indirizzo"
+      />
+    </div>
+  </div>
+
   @if (loading) {
     <p class="loading">Sto caricando i clienti dal server...</p>
   } @else if (errore) {

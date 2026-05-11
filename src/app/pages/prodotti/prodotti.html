@@ -17,6 +17,22 @@
     </div>
   </div>
 
+  <div class="search-panel">
+    <label for="prodotti-search">Cerca prodotto</label>
+
+    <div class="search-input-wrap">
+      <span class="search-icon" aria-hidden="true"></span>
+
+      <input
+        id="prodotti-search"
+        type="search"
+        [value]="searchTerm"
+        (input)="aggiornaRicerca($event)"
+        placeholder="Codice, descrizione o cluster"
+      />
+    </div>
+  </div>
+
   @if (loading) {
     <p class="loading">Sto caricando i prodotti dal server...</p>
   } @else if (errore) {

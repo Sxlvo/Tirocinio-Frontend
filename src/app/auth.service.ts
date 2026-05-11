@@ -42,7 +42,7 @@ export class AuthService {
   }
 
   private clearAppSession(): void {
-    ['isLoggedIn', 'accessToken', 'userEmail', 'userName', 'agentCode'].forEach((k) =>
+    ['isLoggedIn', 'accessToken', 'userEmail', 'userName', 'agentCode', 'allItems'].forEach((k) =>
       localStorage.removeItem(k)
     );
 
@@ -203,6 +203,8 @@ export class AuthService {
             localStorage.setItem('userEmail', email);
             localStorage.setItem('userName', String(agent.Name ?? email).trim());
             localStorage.setItem('agentCode', String(agent.Code).trim());
+            // Salviamo il flag dell'agente per decidere se caricare tutto il catalogo o solo gli articoli assegnati.
+            localStorage.setItem('allItems', this.isTruthy(agent.All_Items ?? agent.allItems) ? 'true' : 'false');
             console.log('[AuthService] Login riuscito — Agente:', agent.Code);
             return { ok: true };
           }
@@ -333,5 +335,9 @@ export class AuthService {
 
   getUserName(): string {
     return localStorage.getItem('userName') || '';
+  }
+
+  private isTruthy(value: any): boolean {
+    return value === true || String(value ?? '').trim().toLowerCase() === 'true';
   }
 }

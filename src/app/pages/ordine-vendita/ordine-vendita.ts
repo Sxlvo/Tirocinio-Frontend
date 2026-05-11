@@ -70,6 +70,8 @@ export class OrdineVenditaComponent implements OnInit {
     }
 
     const agentCode = localStorage.getItem('agentCode')?.trim() ?? '';
+    // Stessa regola della pagina prodotti: true mostra tutti gli articoli, false solo quelli assegnati all'agente.
+    const allItems = localStorage.getItem('allItems') === 'true';
 
     if (!agentCode) {
       this.errore = 'Codice agente non trovato';
@@ -80,7 +82,7 @@ export class OrdineVenditaComponent implements OnInit {
 
     forkJoin({
       indirizzi: this.api.getIndirizziSpedizione(this.cliente.codiceCliente),
-      prodotti: this.api.getProdottiByAgente(agentCode),
+      prodotti: this.api.getProdottiVisibili(agentCode, allItems),
       righeListino: this.api.getRigheListinoVendita(this.cliente.codiceCliente),
     }).subscribe({
       next: ({ indirizzi, prodotti, righeListino }) => {

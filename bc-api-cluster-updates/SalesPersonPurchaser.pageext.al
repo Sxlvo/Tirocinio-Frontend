@@ -22,6 +22,12 @@ pageextension 50100 "SalespersonPurchaserList" extends "Salesperson/Purchaser Ca
                 ApplicationArea = All;
                 Visible = false;
             }
+
+            field("All Items"; Rec."All Items")
+            {
+                ToolTip = 'Specifies if this salesperson can access all items.';
+                ApplicationArea = All;
+            }
         }
     }
 }

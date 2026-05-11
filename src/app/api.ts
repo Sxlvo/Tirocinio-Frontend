@@ -45,6 +45,12 @@ export class ApiService {
     );
   }
 
+  getProdottiVisibili(agentCode: string, allItems: boolean): Observable<any> {
+    // All Items attivo: l'agente vede l'intero catalogo Business Central.
+    // All Items spento: l'agente vede solo le righe assegnate in Salesperson Item Cluster.
+    return allItems ? this.getProdotti() : this.getProdottiByAgente(agentCode);
+  }
+
   getClienti(): Observable<any> {
     return this.getHeaders$().pipe(
       switchMap((headers) =>

@@ -2,6 +2,7 @@ table 50122 "Salesperson Item Cluster"
 {
     Caption = 'Salesperson Item Cluster';
     DataClassification = CustomerContent;
+    // Direct assignment table: one row means one salesperson can see one item in one cluster.
 
     fields
     {

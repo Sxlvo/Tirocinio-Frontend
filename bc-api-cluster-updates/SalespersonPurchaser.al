@@ -19,5 +19,13 @@ tableextension 50100 "Salesperson/Purchaser" extends "Salesperson/Purchaser"
             Caption = 'Item Cluster Group Code';
             DataClassification = CustomerContent;
         }
+
+        field(50003; "All Items"; Boolean)
+        {
+            Caption = 'All Items';
+            DataClassification = CustomerContent;
+            // If true, the frontend loads every item from the standard item API.
+            // If false, it loads only items assigned in "Salesperson Item Cluster".
+        }
     }
 }

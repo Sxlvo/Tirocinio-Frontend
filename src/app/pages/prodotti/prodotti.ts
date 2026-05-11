@@ -29,6 +29,8 @@ export class ProdottiComponent implements OnInit {
     this.tuttiProdotti = [];
     this.listaProdotti = [];
     this.agentCode = localStorage.getItem('agentCode')?.trim() ?? '';
+    // Il flag arriva dal login: true usa /prodotti, false usa /salespersonItemClusters filtrata per agente.
+    const allItems = localStorage.getItem('allItems') === 'true';
 
     if (!this.agentCode) {
       this.loading = false;
@@ -37,7 +39,7 @@ export class ProdottiComponent implements OnInit {
       return;
     }
 
-    this.api.getProdottiByAgente(this.agentCode).subscribe({
+    this.api.getProdottiVisibili(this.agentCode, allItems).subscribe({
       next: (res: any) => {
         this.tuttiProdotti = (res.value ?? []).map((prodotto: any) =>
           this.normalizzaProdottoAgente(prodotto),

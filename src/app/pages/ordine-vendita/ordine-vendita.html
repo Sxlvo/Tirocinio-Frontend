@@ -117,8 +117,7 @@
 
                       @for (prodotto of prodotti; track prodotto.id) {
                         <option [value]="prodotto.id">
-                          {{ prodotto.codiceArticolo }} - {{ prodotto.descrizione }} - €
-                          {{ prodotto.prezzoUnitario | number: '1.2-2' }}
+                          {{ prodotto.codiceArticolo }} - {{ prodotto.descrizione }}
                         </option>
                       }
                     </select>

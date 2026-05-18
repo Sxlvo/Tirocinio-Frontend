@@ -98,6 +98,14 @@ export class OrdiniComponent implements OnInit {
     void this.router.navigate(['/ordini/seleziona-cliente']);
   }
 
+  mostraColonnaStato(): boolean {
+    return this.vista === 'tutti';
+  }
+
+  getStatoVisualizzato(ordine: any): string {
+    return this.getStatoOrdine(ordine) || '-';
+  }
+
   aggiornaRicerca(event: Event): void {
     this.searchTerm = (event.target as HTMLInputElement).value;
     this.applicaFiltroVista();
@@ -165,7 +173,7 @@ export class OrdiniComponent implements OnInit {
         ordine?.indirizzo,
         ordine?.shipToCity,
         ordine?.citta,
-        ordine?.stato,
+        this.getStatoOrdine(ordine),
       ]
         .map((value) => this.normalizzaTesto(value))
         .join(' ');
@@ -194,8 +202,26 @@ export class OrdiniComponent implements OnInit {
   }
 
   private isOrdineDaEvadere(ordine: any): boolean {
-    const stato = String(ordine?.stato ?? '').trim().toLowerCase();
+    const stato = this.getStatoOrdine(ordine);
+
+    if (stato === 'released' || stato === 'rilasciato') {
+      return false;
+    }
+
     return stato === 'open' || stato === 'aperto';
+  }
+
+  private getStatoOrdine(ordine: any): string {
+    const value =
+      ordine?.stato ??
+      ordine?.status ??
+      ordine?.documentStatus ??
+      ordine?.statoDocumento ??
+      ordine?.orderStatus ??
+      ordine?.salesHeaderStatus ??
+      '';
+
+    return String(value).trim().toLowerCase();
   }
 
   private isOrdineInConsegna(ordine: any): boolean {

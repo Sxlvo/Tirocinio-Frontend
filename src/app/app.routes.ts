@@ -31,6 +31,7 @@ export const routes: Routes = [
     path: 'ordini',
     loadComponent: () => import('./pages/ordini/ordini').then((m) => m.OrdiniComponent),
     canActivate: [authGuard],
+    pathMatch: 'full',
   },
   {
     path: 'ordini/seleziona-cliente',

@@ -74,6 +74,9 @@
             <th>Ordine</th>
             <th>Cliente</th>
             <th>Nome cliente</th>
+            @if (mostraColonnaStato()) {
+              <th>Stato</th>
+            }
             <th>Data documento</th>
             <th>Data consegna</th>
             <th>Indirizzo</th>
@@ -96,6 +99,12 @@
               <td>
                 {{ ordine.nomeCliente || '-' }}
               </td>
+
+              @if (mostraColonnaStato()) {
+                <td>
+                  {{ getStatoVisualizzato(ordine) }}
+                </td>
+              }
 
               <td>
                 {{ ordine.dataDocumento ? (ordine.dataDocumento | date:'dd/MM/yyyy') : '-' }}

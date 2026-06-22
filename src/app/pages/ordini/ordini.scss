@@ -252,12 +252,22 @@
   transition: background 0.2s ease;
 }
 
-.ordini-page .ordini-table tbody tr:hover {
+.ordini-page .ordine-row {
+  cursor: pointer;
+}
+
+.ordini-page .ordine-row:hover,
+.ordini-page .ordine-row:focus-visible {
   background: linear-gradient(
     90deg,
     rgba(0, 120, 212, 0.06),
     rgba(0, 166, 166, 0.04)
   );
+}
+
+.ordini-page .ordine-row:focus-visible {
+  outline: 3px solid rgba(0, 166, 166, 0.24);
+  outline-offset: -3px;
 }
 
 .ordini-page .ordini-table td:first-child strong {
@@ -373,5 +383,71 @@
 
   .ordini-page .subtitle {
     font-size: 14px;
+  }
+
+  .ordini-page .header-actions {
+    flex-direction: column;
+  }
+
+  .ordini-page .table-wrapper {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .ordini-page .ordini-table {
+    display: block;
+    min-width: 0;
+  }
+
+  .ordini-page .ordini-table thead {
+    display: none;
+  }
+
+  .ordini-page .ordini-table tbody {
+    display: grid;
+    gap: 12px;
+  }
+
+  .ordini-page .ordini-table tr {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid #e3eaf1;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(16, 32, 51, 0.06);
+  }
+
+  .ordini-page .ordini-table td {
+    display: grid;
+    grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1.2fr);
+    gap: 12px;
+    padding: 11px 14px;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  .ordini-page .ordini-table td::before {
+    content: attr(data-label);
+    color: #667085;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  .ordini-page .ordini-table td:first-child {
+    background: #f7fafc;
+  }
+
+  .ordini-page .ordini-table td:first-child strong {
+    justify-self: end;
+  }
+
+  .ordini-page .text-right {
+    text-align: right;
   }
 }

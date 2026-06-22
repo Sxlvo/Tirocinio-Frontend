@@ -409,4 +409,14 @@
   .prodotti-page .prodotto-title {
     font-size: 17px;
   }
+
+  .prodotti-page .prodotto-code,
+  .prodotti-page .prodotto-title,
+  .prodotti-page .prodotto-info strong {
+    overflow-wrap: anywhere;
+  }
+
+  .prodotti-page .prodotto-image-box {
+    height: 140px;
+  }
 }

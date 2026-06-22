@@ -3,8 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, forkJoin } from 'rxjs';
 import { ApiService } from '../../api';
-
-type VistaOrdini = 'tutti' | 'giorno' | 'da-evadere' | 'in-consegna';
+import {
+  OrderView,
+  filterOrders,
+  getDisplayedDeliveryDate,
+  getOrderStatus,
+} from '../../domain/order-utils';
 
 @Component({
   selector: 'app-ordini',
@@ -21,7 +25,7 @@ export class OrdiniComponent implements OnInit {
   errore = '';
   userName = '';
   agentCode = '';
-  vista: VistaOrdini = 'tutti';
+  vista: OrderView = 'tutti';
   titolo = 'Ordini';
   sottotitolo = 'Elenco degli ordini associati all agente loggato';
   searchTerm = '';
@@ -98,12 +102,22 @@ export class OrdiniComponent implements OnInit {
     void this.router.navigate(['/ordini/seleziona-cliente']);
   }
 
+  apriOrdine(ordine: any): void {
+    const numeroOrdine = String(ordine?.numeroOrdine ?? '').trim();
+
+    if (!numeroOrdine) {
+      return;
+    }
+
+    void this.router.navigate(['/ordini/dettaglio', numeroOrdine]);
+  }
+
   mostraColonnaStato(): boolean {
     return this.vista === 'tutti';
   }
 
   getStatoVisualizzato(ordine: any): string {
-    return this.getStatoOrdine(ordine) || '-';
+    return getOrderStatus(ordine) || '-';
   }
 
   aggiornaRicerca(event: Event): void {
@@ -112,7 +126,7 @@ export class OrdiniComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  private parseVista(vista: string | null): VistaOrdini {
+  private parseVista(vista: string | null): OrderView {
     if (vista === 'giorno' || vista === 'da-evadere' || vista === 'in-consegna') {
       return vista;
     }
@@ -144,152 +158,15 @@ export class OrdiniComponent implements OnInit {
   }
 
   private applicaFiltroVista(): void {
-    let ordiniFiltrati = this.tuttiOrdini;
-
-    if (this.vista === 'giorno') {
-      ordiniFiltrati = ordiniFiltrati.filter((ordine) => this.isOrdineDelGiorno(ordine));
-    } else if (this.vista === 'da-evadere') {
-      ordiniFiltrati = ordiniFiltrati.filter((ordine) => this.isOrdineDaEvadere(ordine));
-    } else if (this.vista === 'in-consegna') {
-      ordiniFiltrati = ordiniFiltrati.filter((ordine) => this.isOrdineInConsegna(ordine));
-    }
-
-    const query = this.normalizzaTesto(this.searchTerm);
-
-    if (!query) {
-      this.listaOrdini = ordiniFiltrati;
-      return;
-    }
-
-    this.listaOrdini = ordiniFiltrati.filter((ordine) => {
-      const dataConsegna = this.getDataConsegnaOrdine(ordine);
-      const testo = [
-        ordine?.numeroOrdine,
-        ordine?.numeroCliente,
-        ordine?.nomeCliente,
-        ordine?.dataDocumento,
-        dataConsegna ? dataConsegna.toLocaleDateString('it-IT') : '',
-        ordine?.shipToAddress,
-        ordine?.indirizzo,
-        ordine?.shipToCity,
-        ordine?.citta,
-        this.getStatoOrdine(ordine),
-      ]
-        .map((value) => this.normalizzaTesto(value))
-        .join(' ');
-
-      return testo.includes(query);
-    });
-  }
-
-  private normalizzaTesto(value: any): string {
-    return String(value ?? '').trim().toLowerCase();
-  }
-
-  private isOrdineDelGiorno(ordine: any): boolean {
-    if (!ordine?.dataDocumento) {
-      return false;
-    }
-
-    const dataDocumento = new Date(ordine.dataDocumento);
-    const oggi = new Date();
-
-    return (
-      dataDocumento.getFullYear() === oggi.getFullYear() &&
-      dataDocumento.getMonth() === oggi.getMonth() &&
-      dataDocumento.getDate() === oggi.getDate()
+    this.listaOrdini = filterOrders(
+      this.tuttiOrdini,
+      this.righeOrdine,
+      this.vista,
+      this.searchTerm,
     );
   }
 
-  private isOrdineDaEvadere(ordine: any): boolean {
-    const stato = this.getStatoOrdine(ordine);
-
-    if (stato === 'released' || stato === 'rilasciato') {
-      return false;
-    }
-
-    return stato === 'open' || stato === 'aperto';
-  }
-
-  private getStatoOrdine(ordine: any): string {
-    const value =
-      ordine?.stato ??
-      ordine?.status ??
-      ordine?.documentStatus ??
-      ordine?.statoDocumento ??
-      ordine?.orderStatus ??
-      ordine?.salesHeaderStatus ??
-      '';
-
-    return String(value).trim().toLowerCase();
-  }
-
-  private isOrdineInConsegna(ordine: any): boolean {
-    const dataConsegna = this.getDataConsegnaOrdine(ordine);
-
-    if (dataConsegna && this.isDataFutura(dataConsegna)) {
-      return true;
-    }
-
-    return this.righeOrdine.some((riga) => {
-      if (String(riga?.numeroOrdine ?? '').trim() !== String(ordine?.numeroOrdine ?? '').trim()) {
-        return false;
-      }
-
-      const dataConsegnaRiga = this.getDataConsegnaOrdine(riga);
-      return !!dataConsegnaRiga && this.isDataFutura(dataConsegnaRiga);
-    });
-  }
-
-  private isDataFutura(data: Date): boolean {
-    const oggi = new Date();
-    oggi.setHours(0, 0, 0, 0);
-
-    data.setHours(0, 0, 0, 0);
-    return data >= oggi;
-  }
-
   getDataConsegnaVisualizzata(ordine: any): Date | null {
-    const dataTestata = this.getDataConsegnaOrdine(ordine);
-
-    if (dataTestata) {
-      return dataTestata;
-    }
-
-    for (const riga of this.righeOrdine) {
-      if (String(riga?.numeroOrdine ?? '').trim() !== String(ordine?.numeroOrdine ?? '').trim()) {
-        continue;
-      }
-
-      const dataRiga = this.getDataConsegnaOrdine(riga);
-
-      if (dataRiga) {
-        return dataRiga;
-      }
-    }
-
-    return null;
-  }
-
-  private getDataConsegnaOrdine(ordine: any): Date | null {
-    const value =
-      ordine?.dataConsegnaPianificata ??
-      ordine?.plannedDeliveryDate ??
-      ordine?.dataConsegna ??
-      ordine?.requestedDeliveryDate ??
-      ordine?.promisedDeliveryDate ??
-      ordine?.shipmentDate ??
-      null;
-
-    if (!value) {
-      return null;
-    }
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime()) || date.getFullYear() <= 1) {
-      return null;
-    }
-
-    return date;
+    return getDisplayedDeliveryDate(ordine, this.righeOrdine);
   }
 }

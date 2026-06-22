@@ -87,4 +87,8 @@ export class ClientiComponent implements OnInit {
     sessionStorage.setItem('selectedCustomerForOrder', JSON.stringify(cliente));
     void this.router.navigate(['/ordini/nuovo']);
   }
+
+  nuovoCliente(): void {
+    void this.router.navigate(['/clienti/nuovo']);
+  }
 }

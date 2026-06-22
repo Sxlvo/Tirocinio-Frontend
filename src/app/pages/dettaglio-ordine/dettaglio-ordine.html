@@ -1,0 +1,125 @@
+<div class="dettaglio-ordine-page">
+  @if (loading) {
+    <p class="loading">Caricamento dettaglio ordine...</p>
+  } @else if (errore) {
+    <div class="errore-box">
+      <p>{{ errore }}</p>
+      <button type="button" class="secondary-btn" (click)="tornaAgliOrdini()">Torna agli ordini</button>
+    </div>
+  } @else {
+    <div class="page-header">
+      <div>
+        <span class="eyebrow">Ordine vendita</span>
+        <h2>{{ ordine.numeroOrdine }}</h2>
+        <p>{{ ordine.nomeCliente || '-' }}</p>
+      </div>
+
+      <div class="header-actions">
+        <button
+          type="button"
+          class="primary-btn"
+          [disabled]="!puoSpedire || shipping"
+          (click)="spedisciOrdine()"
+        >
+          {{ shipping ? 'Spedizione...' : (ordineCompletamenteSpedito ? 'Spedito' : 'Spedisci') }}
+        </button>
+
+        <button type="button" class="secondary-btn" [disabled]="shipping" (click)="tornaAgliOrdini()">
+          Torna agli ordini
+        </button>
+      </div>
+    </div>
+
+    @if (azioneErrore) {
+      <p class="azione-messaggio errore">{{ azioneErrore }}</p>
+    }
+
+    @if (azioneSuccesso) {
+      <p class="azione-messaggio successo">{{ azioneSuccesso }}</p>
+    }
+
+    <div class="summary-grid">
+      <div>
+        <span>Cliente</span>
+        <strong>{{ ordine.numeroCliente || '-' }}</strong>
+      </div>
+      <div>
+        <span>Stato</span>
+        <strong>{{ statoOrdine }}</strong>
+      </div>
+      <div>
+        <span>Data documento</span>
+        <strong>{{ ordine.dataDocumento ? (ordine.dataDocumento | date:'dd/MM/yyyy') : '-' }}</strong>
+      </div>
+      <div>
+        <span>Totale ordine</span>
+        <strong class="totale">€ {{ totaleOrdine | number:'1.2-2' }}</strong>
+      </div>
+    </div>
+
+    <section class="detail-section">
+      <h3>Spedizione</h3>
+      <div class="detail-grid">
+        <div>
+          <span>Destinatario</span>
+          <strong>{{ ordine.shipToName || ordine.nomeCliente || '-' }}</strong>
+        </div>
+        <div>
+          <span>Indirizzo</span>
+          <strong>{{ ordine.shipToAddress || ordine.indirizzo || '-' }}</strong>
+        </div>
+        <div>
+          <span>Città</span>
+          <strong>{{ ordine.shipToCity || ordine.citta || '-' }}</strong>
+        </div>
+        <div>
+          <span>CAP</span>
+          <strong>{{ ordine.shipToPostCode || '-' }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <h3>Righe ordine</h3>
+
+      @if (righeOrdine.length === 0) {
+        <p class="empty-state">Nessuna riga ordine trovata.</p>
+      } @else {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Riga</th>
+                <th>Articolo</th>
+                <th>Unità misura</th>
+                <th class="text-right">Quantità</th>
+                @if (datiSpedizioneDisponibili) {
+                  <th class="text-right">Quantità spedita</th>
+                  <th class="text-right">Da spedire</th>
+                }
+                <th class="text-right">Prezzo unitario</th>
+                <th class="text-right">Totale riga</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (riga of righeOrdine; track riga.id) {
+                <tr>
+                  <td data-label="Riga">{{ riga.numeroRiga || '-' }}</td>
+                  <td data-label="Articolo"><strong>{{ riga.codiceArticolo || '-' }}</strong></td>
+                  <td data-label="Unità misura">{{ riga.unitaMisura || '-' }}</td>
+                  <td data-label="Quantità" class="text-right">{{ riga.quantita || 0 | number:'1.0-2' }}</td>
+                  @if (datiSpedizioneDisponibili) {
+                    <td data-label="Quantità spedita" class="text-right">{{ riga.quantitaSpedita || 0 | number:'1.0-2' }}</td>
+                    <td data-label="Da spedire" class="text-right">{{ riga.quantitaDaSpedire || 0 | number:'1.0-2' }}</td>
+                  }
+                  <td data-label="Prezzo unitario" class="text-right">€ {{ riga.prezzoUnitario || 0 | number:'1.2-2' }}</td>
+                  <td data-label="Totale riga" class="text-right totale">€ {{ riga.totaleRiga || 0 | number:'1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</div>

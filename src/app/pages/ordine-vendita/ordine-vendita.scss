@@ -502,7 +502,7 @@
   }
 
   .nuovo-ordine-page .riga-grid {
-    grid-template-columns: 1fr 120px;
+    grid-template-columns: minmax(0, 1fr) 120px;
   }
 }
 
@@ -555,6 +555,12 @@
   .nuovo-ordine-page button {
     width: 100%;
   }
+
+  .nuovo-ordine-page input,
+  .nuovo-ordine-page select,
+  .nuovo-ordine-page textarea {
+    min-width: 0;
+  }
 }
 
 @media (max-width: 600px) {
@@ -595,5 +601,19 @@
 
   .nuovo-ordine-page .totale-ordine-box strong {
     font-size: 23px;
+  }
+
+  .nuovo-ordine-page .riga-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .nuovo-ordine-page .remove-btn {
+    width: 100%;
+  }
+
+  .nuovo-ordine-page .spedizione-box strong,
+  .nuovo-ordine-page .cliente-detail-item strong {
+    overflow-wrap: anywhere;
   }
 }

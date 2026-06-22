@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { AuthenticationResult, AccountInfo, RedirectRequest, SilentRequest } from '@azure/msal-browser';
 import { msalInstance, BC_SCOPES, MSAL_CONFIG } from './auth-config';
+import { environment } from '../environments/environment';
+import { AgentLogin, findAgentByEmails } from './domain/agent-login';
 
 export type LoginErrorCode =
   | 'REDIRECT_FAILED'
@@ -23,8 +25,7 @@ export type LoginResult =
 export class AuthService {
   private readonly tokenStorageKey = 'bcAccessToken';
 
-  private baseUrl =
-    'https://api.businesscentral.dynamics.com/v2.0/6b99dd4b-9681-4414-8a12-1beeb67853f9/Sandbox_BC27/ODataV4/Company(Id=14fae42a-0299-f011-a7b1-6045bdc8dcac)/AgentLoginWS';
+  private readonly agentLoginUrl = `${environment.businessCentral.apiBaseUrl}agentLogins`;
 
   private initPromise?: Promise<void>;
 
@@ -174,59 +175,21 @@ export class AuthService {
       );
     }
 
-    let lastError: any = null;
-
-    for (const originalEmail of emails) {
-      const email = originalEmail.trim();
-      if (!email) continue;
-
-      const safeEmail = email.replace(/'/g, "''");
-      const normalizedEmail = safeEmail.toLowerCase();
-
-      const candidateUrls = [
-        `${this.baseUrl}?$filter=tolower(E_Mail) eq '${normalizedEmail}'`,
-        `${this.baseUrl}?$filter=E_Mail eq '${safeEmail}'`,
-      ];
-
-      console.log('[AuthService] Ricerca agente BC con email:', email);
-
-      for (const url of candidateUrls) {
-        try {
-          const res = await firstValueFrom(this.http.get<any>(url, { headers }));
-          console.log('[AuthService] Risposta OData BC:', res);
-
-          const agent = res?.value?.[0];
-          if (agent?.Code) {
-            localStorage.setItem('isLoggedIn', 'true');
-            sessionStorage.setItem(this.tokenStorageKey, token);
-            localStorage.removeItem('accessToken');
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('userName', String(agent.Name ?? email).trim());
-            localStorage.setItem('agentCode', String(agent.Code).trim());
-            // Salviamo il flag dell'agente per decidere se caricare tutto il catalogo o solo gli articoli assegnati.
-            localStorage.setItem('allItems', this.isTruthy(agent.All_Items ?? agent.allItems) ? 'true' : 'false');
-            console.log('[AuthService] Login riuscito — Agente:', agent.Code);
-            return { ok: true };
-          }
-        } catch (e: any) {
-          lastError = e;
-          console.error(
-            '[AuthService] Errore OData BC per email',
-            email,
-            ':',
-            e?.status,
-            e?.statusText,
-            e?.error,
-          );
-        }
-      }
-    }
-
-    if (lastError?.status && lastError.status !== 404) {
+    let response: { value?: AgentLogin[] };
+    try {
+      response = await firstValueFrom(this.http.get<{ value?: AgentLogin[] }>(this.agentLoginUrl, { headers }));
+    } catch (error: any) {
+      console.error('[AuthService] Errore API agentLogins:', error);
       return this.fail(
         'BC_REQUEST_FAILED',
-        `Errore durante la verifica dell'agente su Business Central (${lastError.status}).`
+        `Errore durante la verifica dell'agente su Business Central (${error?.status ?? 'API non disponibile'}).`
       );
+    }
+
+    const agent = findAgentByEmails(response?.value ?? [], emails);
+    if (agent) {
+      this.saveAgentSession(token, agent.email || emails[0], agent);
+      return { ok: true };
     }
 
     return this.fail(
@@ -256,6 +219,21 @@ export class AuthService {
           .filter(Boolean)
       )
     );
+  }
+
+  private saveAgentSession(token: string, email: string, agent: AgentLogin): void {
+    localStorage.setItem('isLoggedIn', 'true');
+    sessionStorage.setItem(this.tokenStorageKey, token);
+    localStorage.removeItem('accessToken');
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('userName', String(agent.name ?? email).trim());
+    localStorage.setItem('agentCode', String(agent.code).trim());
+    // Salviamo il flag dell'agente per decidere se caricare tutto il catalogo o solo gli articoli assegnati.
+    localStorage.setItem(
+      'allItems',
+      this.isTruthy(agent.allItems) ? 'true' : 'false',
+    );
+    console.log('[AuthService] Login riuscito — Agente:', agent.code);
   }
 
   getPostLoginRedirect(): string {

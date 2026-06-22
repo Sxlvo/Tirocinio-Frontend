@@ -161,14 +161,13 @@
 
 @media (max-width: 900px) {
   .hero-content {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 24px;
-}
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
   .bc-logo-box {
-    width: fit-content;
+    width: 100%;
+    min-width: 0;
   }
 
   .quick-actions,
@@ -178,5 +177,30 @@
 
   .hero h1 {
     font-size: 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  .home-page {
+    gap: 14px;
+  }
+
+  .hero,
+  .action-card,
+  .workflow-box {
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .hero h1 {
+    font-size: 25px;
+  }
+
+  .hero p {
+    font-size: 15px;
+  }
+
+  .quick-actions {
+    gap: 12px;
   }
 }

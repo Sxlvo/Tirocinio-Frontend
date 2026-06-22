@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { from, map, Observable, switchMap } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private baseUrl =
-    'https://api.businesscentral.dynamics.com/v2.0/6b99dd4b-9681-4414-8a12-1beeb67853f9/Sandbox_BC27/api/bs/tirocinio/v1.0/companies(14fae42a-0299-f011-a7b1-6045bdc8dcac)/';
+  private readonly baseUrl = environment.businessCentral.apiBaseUrl;
 
   constructor(
     private http: HttpClient,
@@ -68,6 +68,22 @@ export class ApiService {
     );
   }
 
+  createCliente(payload: any): Observable<any> {
+    return this.getHeaders$().pipe(
+      switchMap((headers) =>
+        this.http.post<any>(`${this.baseUrl}clienti`, payload, { headers }),
+      ),
+    );
+  }
+
+  getCustomerTemplates(): Observable<any> {
+    return this.getHeaders$().pipe(
+      switchMap((headers) =>
+        this.http.get<any>(`${this.baseUrl}customerTemplates`, { headers }),
+      ),
+    );
+  }
+
   getOrdini(): Observable<any> {
     return this.getHeaders$().pipe(
       switchMap((headers) =>
@@ -102,6 +118,14 @@ export class ApiService {
     );
   }
 
+  createIndirizzoSpedizione(payload: any): Observable<any> {
+    return this.getHeaders$().pipe(
+      switchMap((headers) =>
+        this.http.post<any>(`${this.baseUrl}indirizziSpedizione`, payload, { headers }),
+      ),
+    );
+  }
+
   getRigheListinoVendita(customerNo: string): Observable<any> {
   const safeCustomerNo = customerNo.trim().replace(/'/g, "''");
 
@@ -125,6 +149,21 @@ export class ApiService {
     return this.getHeaders$().pipe(
       switchMap((headers) =>
         this.http.post<any>(`${this.baseUrl}righeOrdine`, payload, { headers }),
+      ),
+    );
+  }
+
+  spedisciOrdine(orderId: string, numeroOrdine: string): Observable<any> {
+    const safeId = encodeURIComponent(orderId.trim());
+    const url = `${this.baseUrl}ordini(${safeId})/Microsoft.NAV.PostSalesShipment`;
+
+    return this.getHeaders$().pipe(
+      switchMap((headers) =>
+        this.http.post<any>(
+          url,
+          { salesOrderNumber: numeroOrdine.trim() },
+          { headers },
+        ),
       ),
     );
   }

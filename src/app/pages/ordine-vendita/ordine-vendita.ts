@@ -396,9 +396,14 @@ export class OrdineVenditaComponent implements OnInit {
         this.creaRigheOrdineSequenziali(numeroOrdine, righeCompattate, index + 1);
       },
       error: (e: any) => {
-        console.error(e);
+        console.error('Errore creazione riga ordine:', e);
         this.saving = false;
-        this.errore = `Testata ordine creata, ma errore nella creazione della riga ${index + 1}`;
+        const messaggioBusinessCentral =
+          e?.error?.error?.message ??
+          e?.error?.message;
+        this.errore = messaggioBusinessCentral
+          ? `Testata ordine creata, ma errore nella riga ${index + 1}: ${messaggioBusinessCentral}`
+          : `Testata ordine creata, ma errore nella creazione della riga ${index + 1}`;
         this.cdr.detectChanges();
       },
     });
@@ -449,9 +454,12 @@ export class OrdineVenditaComponent implements OnInit {
         this.creaRigheOrdineSequenziali(numeroOrdine, righeCompattate, 0);
       },
       error: (e: any) => {
-        console.error(e);
+        console.error('Errore creazione ordine:', e);
         this.saving = false;
-        this.errore = 'Errore nella creazione dell’ordine';
+        this.errore =
+          e?.error?.error?.message ??
+          e?.error?.message ??
+          'Errore nella creazione dell’ordine';
         this.cdr.detectChanges();
       },
     });

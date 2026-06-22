@@ -5,9 +5,15 @@
       <p class="subtitle">Elenco dei clienti</p>
     </div>
 
-    <button type="button" class="reload-btn" (click)="caricaClienti()">
-      Ricarica
-    </button>
+    <div class="header-actions">
+      <button type="button" class="new-customer-btn" (click)="nuovoCliente()">
+        + Nuovo cliente
+      </button>
+
+      <button type="button" class="reload-btn" (click)="caricaClienti()">
+        Ricarica
+      </button>
+    </div>
   </div>
 
   <div class="info-box">

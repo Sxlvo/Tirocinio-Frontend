@@ -87,38 +87,44 @@
 
         <tbody>
           @for (ordine of listaOrdini; track ordine.id) {
-            <tr>
-              <td>
+            <tr
+              class="ordine-row"
+              role="link"
+              tabindex="0"
+              (click)="apriOrdine(ordine)"
+              (keydown.enter)="apriOrdine(ordine)"
+            >
+              <td data-label="Ordine">
                 <strong>{{ ordine.numeroOrdine }}</strong>
               </td>
 
-              <td>
+              <td data-label="Cliente">
                 {{ ordine.numeroCliente || '-' }}
               </td>
 
-              <td>
+              <td data-label="Nome cliente">
                 {{ ordine.nomeCliente || '-' }}
               </td>
 
               @if (mostraColonnaStato()) {
-                <td>
+                <td data-label="Stato">
                   {{ getStatoVisualizzato(ordine) }}
                 </td>
               }
 
-              <td>
+              <td data-label="Data documento">
                 {{ ordine.dataDocumento ? (ordine.dataDocumento | date:'dd/MM/yyyy') : '-' }}
               </td>
-              <td>
+              <td data-label="Data consegna">
                 {{ getDataConsegnaVisualizzata(ordine) ? (getDataConsegnaVisualizzata(ordine) | date:'dd/MM/yyyy') : '-' }}
               </td>
-              <td>
+              <td data-label="Indirizzo">
                 {{ ordine.shipToAddress || ordine.indirizzo || '-' }}
               </td>
-              <td>
+              <td data-label="Città">
                 {{ ordine.shipToCity || ordine.citta || '-' }}
               </td>
-              <td class="text-right totale">
+              <td data-label="Totale" class="text-right totale">
                 € {{ ordine.totaleOrdine || ordine.totale || 0 | number:'1.2-2' }}
               </td>
             </tr>

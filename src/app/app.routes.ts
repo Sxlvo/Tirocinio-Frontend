@@ -26,6 +26,13 @@ export const routes: Routes = [
     path: 'clienti',
     loadComponent: () => import('./pages/clienti/clienti').then((m) => m.ClientiComponent),
     canActivate: [authGuard],
+    pathMatch: 'full',
+  },
+  {
+    path: 'clienti/nuovo',
+    loadComponent: () =>
+      import('./pages/nuovo-cliente/nuovo-cliente').then((m) => m.NuovoClienteComponent),
+    canActivate: [authGuard],
   },
   {
     path: 'ordini',
@@ -45,6 +52,12 @@ export const routes: Routes = [
     path: 'ordini/nuovo',
     loadComponent: () =>
       import('./pages/ordine-vendita/ordine-vendita').then((m) => m.OrdineVenditaComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'ordini/dettaglio/:numeroOrdine',
+    loadComponent: () =>
+      import('./pages/dettaglio-ordine/dettaglio-ordine').then((m) => m.DettaglioOrdineComponent),
     canActivate: [authGuard],
   },
   {

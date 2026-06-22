@@ -4,9 +4,22 @@ body {
   padding: 0;
   width: 100%;
   min-height: 100%;
+  overflow-x: hidden;
   background-color: #f4f6f9;
 }
 
 * {
   box-sizing: border-box;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  max-width: 100%;
 }

@@ -1,0 +1,291 @@
+<div class="nuovo-cliente-page">
+  <div class="page-header">
+    <div>
+      <h2>Nuovo cliente</h2>
+      <p>Crea una nuova anagrafica cliente in Business Central</p>
+    </div>
+
+    <button type="button" class="secondary-btn" (click)="tornaAiClienti()">
+      Torna ai clienti
+    </button>
+  </div>
+
+  <form class="cliente-form" (ngSubmit)="salvaCliente()">
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="codice-cliente">Codice cliente</label>
+        <input
+          id="codice-cliente"
+          name="codiceCliente"
+          type="text"
+          [(ngModel)]="codiceCliente"
+          placeholder="Lascia vuoto per numerazione automatica"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="nome-cliente">Nome cliente *</label>
+        <input
+          id="nome-cliente"
+          name="nome"
+          type="text"
+          required
+          [(ngModel)]="nome"
+          placeholder="Ragione sociale o nome"
+        />
+      </div>
+
+      <div class="form-field form-field-wide">
+        <label for="indirizzo-cliente">Indirizzo</label>
+        <input
+          id="indirizzo-cliente"
+          name="indirizzo"
+          type="text"
+          [(ngModel)]="indirizzo"
+          placeholder="Via e numero civico"
+        />
+      </div>
+
+      <div class="form-field form-field-wide">
+        <label for="indirizzo2-cliente">Indirizzo 2</label>
+        <input
+          id="indirizzo2-cliente"
+          name="indirizzo2"
+          type="text"
+          [(ngModel)]="indirizzo2"
+          placeholder="Interno, edificio o informazioni aggiuntive"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="citta-cliente">Città</label>
+        <input
+          id="citta-cliente"
+          name="citta"
+          type="text"
+          [(ngModel)]="citta"
+          placeholder="Città"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="cap-cliente">CAP</label>
+        <input
+          id="cap-cliente"
+          name="cap"
+          type="text"
+          [(ngModel)]="cap"
+          placeholder="CAP"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="paese-cliente">Codice paese</label>
+        <input
+          id="paese-cliente"
+          name="codicePaese"
+          type="text"
+          [(ngModel)]="codicePaese"
+          placeholder="Es. IT"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="telefono-cliente">Telefono</label>
+        <input
+          id="telefono-cliente"
+          name="telefono"
+          type="tel"
+          [(ngModel)]="telefono"
+          placeholder="+39 ..."
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="email-cliente">Email</label>
+        <input
+          id="email-cliente"
+          name="email"
+          type="email"
+          [(ngModel)]="email"
+          placeholder="cliente@esempio.it"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="partita-iva-cliente">Partita IVA</label>
+        <input
+          id="partita-iva-cliente"
+          name="partitaIva"
+          type="text"
+          [(ngModel)]="partitaIva"
+          placeholder="Partita IVA"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="agente-cliente">Codice agente</label>
+        <input
+          id="agente-cliente"
+          name="codiceAgente"
+          type="text"
+          [value]="codiceAgente || '-'"
+          readonly
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="modello-cliente">Modello cliente *</label>
+        <select
+          id="modello-cliente"
+          name="codiceModelloCliente"
+          required
+          [disabled]="loadingModelli || saving"
+          [(ngModel)]="codiceModelloCliente"
+        >
+          <option value="">
+            {{ loadingModelli ? 'Caricamento modelli...' : '-- seleziona modello --' }}
+          </option>
+          @for (modello of modelliCliente; track modello.id) {
+            <option [value]="modello.code">
+              {{ modello.code }}{{ modello.description ? ' - ' + modello.description : '' }}
+            </option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <section class="shipping-section">
+      <div class="section-header">
+        <div>
+          <h3>Indirizzi di spedizione</h3>
+          <p>Aggiungi gli indirizzi alternativi utilizzabili negli ordini del cliente.</p>
+        </div>
+
+        <button type="button" class="secondary-btn" [disabled]="saving" (click)="aggiungiIndirizzoSpedizione()">
+          + Aggiungi indirizzo
+        </button>
+      </div>
+
+      @if (indirizziSpedizione.length === 0) {
+        <p class="empty-shipping">Nessun indirizzo di spedizione aggiuntivo.</p>
+      }
+
+      @for (indirizzo of indirizziSpedizione; track $index) {
+        <div class="shipping-address">
+          <div class="shipping-address-header">
+            <h4>Indirizzo {{ $index + 1 }}</h4>
+
+            <button
+              type="button"
+              class="remove-btn"
+              [disabled]="saving"
+              (click)="rimuoviIndirizzoSpedizione($index)"
+            >
+              Rimuovi
+            </button>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label [for]="'ship-code-' + $index">Codice indirizzo *</label>
+              <input
+                [id]="'ship-code-' + $index"
+                [name]="'shipCode' + $index"
+                type="text"
+                required
+                [(ngModel)]="indirizzo.code"
+                placeholder="Es. SEDE, MAGAZZINO"
+              />
+            </div>
+
+            <div class="form-field">
+              <label [for]="'ship-name-' + $index">Nome destinatario</label>
+              <input
+                [id]="'ship-name-' + $index"
+                [name]="'shipName' + $index"
+                type="text"
+                [(ngModel)]="indirizzo.name"
+                placeholder="Nome o ragione sociale"
+              />
+            </div>
+
+            <div class="form-field form-field-wide">
+              <label [for]="'ship-address-' + $index">Indirizzo *</label>
+              <input
+                [id]="'ship-address-' + $index"
+                [name]="'shipAddress' + $index"
+                type="text"
+                required
+                [(ngModel)]="indirizzo.address"
+                placeholder="Via e numero civico"
+              />
+            </div>
+
+            <div class="form-field">
+              <label [for]="'ship-city-' + $index">Città</label>
+              <input
+                [id]="'ship-city-' + $index"
+                [name]="'shipCity' + $index"
+                type="text"
+                [(ngModel)]="indirizzo.city"
+                placeholder="Città"
+              />
+            </div>
+
+            <div class="form-field">
+              <label [for]="'ship-post-code-' + $index">CAP</label>
+              <input
+                [id]="'ship-post-code-' + $index"
+                [name]="'shipPostCode' + $index"
+                type="text"
+                [(ngModel)]="indirizzo.postCode"
+                placeholder="CAP"
+              />
+            </div>
+
+            <div class="form-field">
+              <label [for]="'ship-county-' + $index">Provincia</label>
+              <input
+                [id]="'ship-county-' + $index"
+                [name]="'shipCounty' + $index"
+                type="text"
+                [(ngModel)]="indirizzo.county"
+                placeholder="Provincia"
+              />
+            </div>
+
+            <div class="form-field">
+              <label [for]="'ship-country-' + $index">Codice paese</label>
+              <input
+                [id]="'ship-country-' + $index"
+                [name]="'shipCountry' + $index"
+                type="text"
+                [(ngModel)]="indirizzo.countryRegionCode"
+                placeholder="Es. IT"
+              />
+            </div>
+          </div>
+        </div>
+      }
+    </section>
+
+    @if (errore) {
+      <p class="errore">{{ errore }}</p>
+    }
+
+    @if (successo) {
+      <p class="successo">{{ successo }}</p>
+    }
+
+    <div class="form-actions">
+      <button type="button" class="secondary-btn" [disabled]="saving" (click)="tornaAiClienti()">
+        Annulla
+      </button>
+
+      <button type="submit" class="primary-btn" [disabled]="saving">
+        {{ saving ? 'Salvataggio...' : 'Salva cliente' }}
+      </button>
+    </div>
+  </form>
+</div>

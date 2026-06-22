@@ -21,12 +21,12 @@ export class AuthEntryComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    const hasOAuthParams = typeof window !== 'undefined' && (
-      window.location.search.includes('code=') ||
-      window.location.search.includes('error=') ||
-      window.location.hash.includes('code=') ||
-      window.location.hash.includes('error=')
-    );
+    const hasOAuthParams =
+      typeof window !== 'undefined' &&
+      (window.location.search.includes('code=') ||
+        window.location.search.includes('error=') ||
+        window.location.hash.includes('code=') ||
+        window.location.hash.includes('error='));
 
     this.popupMode = !!window.opener;
 
@@ -49,7 +49,6 @@ export class AuthEntryComponent implements OnInit {
       window.close();
       return;
     }
-
     // Caso 3: apertura normale dell'app.
     const ok = await this.auth.ensureSession();
     await this.router.navigateByUrl(ok ? '/home' : '/login');

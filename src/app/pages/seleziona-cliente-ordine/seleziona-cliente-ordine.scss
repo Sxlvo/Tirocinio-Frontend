@@ -187,4 +187,33 @@
     align-items: stretch;
     flex-direction: column;
   }
+
+  .seleziona-cliente-page .btn-secondary {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .seleziona-cliente-page {
+    padding: 12px;
+  }
+
+  .seleziona-cliente-page .page-header,
+  .seleziona-cliente-page .info-box > div,
+  .seleziona-cliente-page .cliente-card {
+    border-radius: 14px;
+  }
+
+  .seleziona-cliente-page .page-header {
+    padding: 18px;
+  }
+
+  .seleziona-cliente-page .page-header h3 {
+    font-size: 21px;
+    overflow-wrap: anywhere;
+  }
+
+  .seleziona-cliente-page .clienti-container {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
